@@ -6,4 +6,17 @@
     <bean id="hello" class="com.huang.bo.pojo.Hello">
         <property name="str" value="spring"></property>
     </bean>
+
+    <!--  有参构造的下表赋值方式  -->
+    <bean id="user" class="com.huang.bo.pojo.User">
+        <constructor-arg index="0" value="huangbo"></constructor-arg>
+    </bean>
+
+    <bean id="userType" class="com.huang.bo.pojo.User">
+        <constructor-arg type="java.lang.String" value="liubo"></constructor-arg>
+    </bean>
+
+    <bean id="userPara" class="com.huang.bo.pojo.User">
+        <constructor-arg name="name" value="liubo1221"></constructor-arg>
+    </bean>
 </beans>

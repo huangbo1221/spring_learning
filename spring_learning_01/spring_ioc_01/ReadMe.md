@@ -156,3 +156,42 @@ use UserMybatisImpl!
 
 想引用哪类sql，只需改变上面xml的配置文件的ref值即可。
 即将对象的创建、赋值等交给了spring容器管理。这也就是所谓的IOC（控制反转）。
+
+# IOC的创建方式
+1、默认使用bean的无参构造来创建对象；
+2、可以使用有参构造来创建对象；
+* 使用有参构造的下标赋值方式，如下：
+```xml
+<!--  有参构造的下表赋值方式  -->
+    <bean id="user" class="com.huang.bo.pojo.User">
+        <constructor-arg index="0" value="huangbo"></constructor-arg>
+    </bean>
+```
+
+* 使用参数类型的方式来构造
+```xml
+<bean id="userType" class="com.huang.bo.pojo.User">
+    <constructor-arg type="java.lang.String" value="liubo"></constructor-arg>
+</bean>
+```
+但是有一个弊端，当构造方法有多个string时，统一都是一样的值，因此不推荐使用！
+
+* 参数名来直接赋值创建
+```xml
+<bean id="userPara" class="com.huang.bo.pojo.User">
+    <constructor-arg name="name" value="liubo1221"></constructor-arg>
+</bean>
+```
+输出如下：
+```java
+@Test
+public void test04() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    User user = (User) context.getBean("userPara");
+    System.out.println(user.toString());
+}
+```
+```shell
+User{name='liubo1221'}
+```
+这种方式最为直观！！！
