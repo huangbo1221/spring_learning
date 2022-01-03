@@ -2,6 +2,9 @@ import com.huang.ioc01.UserDao.UserOracleDaoimpl;
 import com.huang.ioc01.UserDao.UserSqlServerImpl;
 import com.huang.ioc01.UserService.UserService;
 import com.huang.ioc01.UserService.UserServiceImpl;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @ClassName MyTest01
@@ -19,5 +22,12 @@ public class MyTest01 {
         // 得强转成UserServiceImpl
         ((UserServiceImpl)userService).setUserDao(new UserOracleDaoimpl());
         userService.getUsers();
+    }
+
+    @Test
+    public void test01() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        UserService userservice = (UserService) context.getBean("userservice");
+        userservice.getUsers();
     }
 }

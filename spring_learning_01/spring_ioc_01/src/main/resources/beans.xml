@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="mybatis" class="com.huang.ioc01.UserDao.UserMybatisImpl"></bean>
+    <bean id="oracle" class="com.huang.ioc01.UserDao.UserOracleDaoimpl"></bean>
+    <bean id="sqlServer" class="com.huang.ioc01.UserDao.UserSqlServerImpl"></bean>
+
+    <bean id="userservice" class="com.huang.ioc01.UserService.UserServiceImpl">
+        <property name="userDao" ref="mybatis"></property>
+    </bean>
+</beans>

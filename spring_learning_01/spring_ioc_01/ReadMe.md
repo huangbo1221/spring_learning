@@ -125,3 +125,34 @@ use UserOracleDaoimpl!
 
 上面的变化其实就是一种IOC的原型，将控制权由业务层交给了用户，给
 用户自己去选择！
+
+当然，也可以完全采用spring的方式来进行上面效果的实现，spring配置如beans.xml。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="mybatis" class="com.huang.ioc01.UserDao.UserMybatisImpl"></bean>
+    <bean id="oracle" class="com.huang.ioc01.UserDao.UserOracleDaoimpl"></bean>
+    <bean id="sqlServer" class="com.huang.ioc01.UserDao.UserSqlServerImpl"></bean>
+
+    <bean id="userservice" class="com.huang.ioc01.UserService.UserServiceImpl">
+        <property name="userDao" ref="mybatis"></property>
+    </bean>
+</beans>
+```
+```java
+@Test
+public void test01() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    UserService userservice = (UserService) context.getBean("userservice");
+    userservice.getUsers();
+    }
+```
+输出如下：
+use UserMybatisImpl!
+
+想引用哪类sql，只需改变上面xml的配置文件的ref值即可。
+即将对象的创建、赋值等交给了spring容器管理。这也就是所谓的IOC（控制反转）。
