@@ -195,3 +195,46 @@ public void test04() {
 User{name='liubo1221'}
 ```
 这种方式最为直观！！！
+
+# Spring配置
+（1）别名
+```xml
+<alias name="user" alias="userAlias"></alias>
+```
+如上，可以通过user或者userAlias获取同样的bean
+
+（2）bean的配置
+```xml
+<!--
+id:bean的唯一标志符，也就是相当于我们学的对象名；
+class:bean对象所对应的全限定名，包名+类型
+name:也是别名，而且name可以同时取多个别名
+-->
+<bean id="userId" class="com.huang.bo.pojo.User" name="user2 user3,user4">
+    <constructor-arg name="name" value="huangbo1221"></constructor-arg>
+</bean>
+```
+（3）import
+这个import一般用于团队开发使用，可以将多个配置文件，导入合并为1个。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <import resource="beans.xml"></import>
+    <import resource="beans2.xml"></import>
+    <import resource="beans3.xml"></import>
+
+</beans>
+```
+如上，开发分别搞了三个xml配置文件beans.xml、beans2.xml、beans3.xml.
+我们使用的时候并不需要全部分开导入，而是可以新建一个applicationcontext.xml，内容
+如上。使用时，直接获取applicationcontext.xml即可获取到所有的bean。
+
+# DI 依赖注入
+（1）构造注入
+如前面讲的spring利用构造方法来创建对象
+（2）set方式注入【重点】
+  * 依赖：bean对象的创建依赖容器！
+  * 注入：bean对象中的所有属性，由容器来注入！
