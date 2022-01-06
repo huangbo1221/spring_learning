@@ -1,4 +1,5 @@
 import com.huang.bo.pojo.Student;
+import com.huang.bo.pojo.User;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -16,6 +17,20 @@ public class Mytest01 {
     public void test01() {
         ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
         Student student = (Student) context.getBean("student");
-        System.out.println(student.getName());
+        System.out.println(student.toString());
+    }
+
+    @Test
+    public void test02() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("userBeans.xml");
+        User user = context.getBean("user", User.class);
+        System.out.println(user.toString());
+    }
+
+    @Test
+    public void test03() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("userBeans.xml");
+        User user = context.getBean("user2", User.class);
+        System.out.println(user.toString());
     }
 }

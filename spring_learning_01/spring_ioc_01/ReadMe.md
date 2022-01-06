@@ -242,3 +242,19 @@ name:也是别名，而且name可以同时取多个别名
 【环境搭建】
 如spring_day_02模块下的所有文件
 
+# 命名空间注入
+如下示例：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--  p命名空间注入，可以直接注入属性的值，这里的p就相当于property  -->
+    <bean id="user" class="com.huang.bo.pojo.User" p:name="huangbo" p:age="18"></bean>
+<!--  p命名空间注入，构造器注入，这里的c就相当于constructor-arg  -->
+    <bean id="user2" class="com.huang.bo.pojo.User" c:name="huang" c:age="18"></bean>
+</beans>
+```

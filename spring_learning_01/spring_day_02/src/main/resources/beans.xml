@@ -53,6 +53,8 @@
             <props>
                 <prop key="学号">20210104</prop>
                 <prop key="身份证">195502</prop>
+                <prop key="userName">root</prop>
+                <prop key="password">123456</prop>
             </props>
         </property>
     </bean>
