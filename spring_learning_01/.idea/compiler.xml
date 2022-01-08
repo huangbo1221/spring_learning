@@ -10,6 +10,7 @@
         <module name="spring_day_02" />
         <module name="spring_hello_01" />
         <module name="spring_ioc_01" />
+        <module name="spring_day_03" />
       </profile>
     </annotationProcessing>
   </component>

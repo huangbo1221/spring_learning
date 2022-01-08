@@ -12,6 +12,7 @@
         <module>spring_ioc_01</module>
         <module>spring_hello_01</module>
         <module>spring_day_02</module>
+        <module>spring_day_03</module>
     </modules>
 
     <dependencies>

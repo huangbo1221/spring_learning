@@ -287,3 +287,61 @@ name:也是别名，而且name可以同时取多个别名
 // 输出false
 ```
 
+# bean的自动装配
+* 自动装配时spring满足bean依赖的一种方式
+* spring会在上下文中自动寻找，并自动给bean装配属性
+
+在spring中有三种装配的方式
+1、在xml中显示配置
+2、在java中显示配置
+3、隐式的自动装配bean【重要】
+
+(1)
+```xml
+<!--  1、最普通的一种配置方式  -->
+<bean id="cat" class="com.huang.pojo.Cat"></bean>
+<bean id="dog" class="com.huang.pojo.Dog"></bean>
+<bean id="person" class="com.huang.pojo.Person">
+    <property name="name" value="huangbo1221"></property>
+    <property name="cat" ref="cat"></property>
+    <property name="dog" ref="dog"></property>
+</bean>
+```
+
+```java
+@Test
+public void test01() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Person person = context.getBean("person", Person.class);
+    person.getCat().shout();
+    person.getDog().shout();
+}
+```
+```shell
+miao~
+wang~
+```
+
+(2)
+```xml
+<!--
+  byName:会自动在容器上下文中查找，和自己对象set方法后面的值对应的beanid！
+  如下这种方式也可以自动加载成功
+  -->
+<bean id="person2" class="com.huang.pojo.Person" autowire="byName">
+    <property name="name" value="huangbo1221"></property>
+</bean>
+```
+```java
+@Test
+public void test02() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Person person = context.getBean("person2", Person.class);
+    person.getCat().shout();
+    person.getDog().shout();
+}
+```
+```shell
+miao~
+wang~
+```

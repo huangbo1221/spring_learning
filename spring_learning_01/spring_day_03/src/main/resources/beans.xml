@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--  1、最普通的一种配置方式  -->
+    <bean id="cat" class="com.huang.pojo.Cat"></bean>
+    <bean id="dog" class="com.huang.pojo.Dog"></bean>
+    <bean id="person" class="com.huang.pojo.Person">
+        <property name="name" value="huangbo1221"></property>
+        <property name="cat" ref="cat"></property>
+        <property name="dog" ref="dog"></property>
+    </bean>
+
+<!--
+  byName:会自动在容器上下文中查找，和自己对象set方法后面的值对应的beanid！
+  如下这种方式也可以自动加载成功
+  一旦上面的cat或者dog的bean改了id名，下面的自动装载就会失败
+  -->
+    <bean id="person2" class="com.huang.pojo.Person" autowire="byName">
+        <property name="name" value="huangbo1221"></property>
+    </bean>
+
+<!--  ByType自动装配，通过set方法的入参类型来自动装配  -->
+    <bean id="person3" class="com.huang.pojo.Person" autowire="byType">
+        <property name="name" value="huangbo1111"></property>
+    </bean>
+</beans>
