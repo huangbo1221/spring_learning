@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+<!--  开启注解的支持  -->
+    <context:annotation-config/>
 <!--  1、最普通的一种配置方式  -->
     <bean id="cat" class="com.huang.pojo.Cat"></bean>
     <bean id="dog" class="com.huang.pojo.Dog"></bean>
@@ -21,8 +26,22 @@
         <property name="name" value="huangbo1221"></property>
     </bean>
 
-<!--  ByType自动装配，通过set方法的入参类型来自动装配  -->
-    <bean id="person3" class="com.huang.pojo.Person" autowire="byType">
-        <property name="name" value="huangbo1111"></property>
+<!--&lt;!&ndash;  ByType自动装配，通过set方法的入参类型来自动装配  &ndash;&gt;-->
+<!--    <bean id="person3" class="com.huang.pojo.Person" autowire="byType">-->
+<!--        <property name="name" value="huangbo1111"></property>-->
+<!--    </bean>-->
+
+    <!--  ByType自动装配，通过set方法的入参类型来自动装配  -->
+    <bean id="person4" class="com.huang.pojo.Person"></bean>
+<!--  定义一个”手“的bean  -->
+    <bean id="hands" class="com.huang.pojo.Hands">
+        <property name="name" value="first"></property>
     </bean>
+    <bean id="hands2" class="com.huang.pojo.Hands">
+        <property name="name" value="second"></property>
+    </bean>
+
+    <bean id="monkey" class="com.huang.pojo.Monkey"></bean>
+
+    <bean id="bear" class="com.huang.pojo.Bear"></bean>
 </beans>

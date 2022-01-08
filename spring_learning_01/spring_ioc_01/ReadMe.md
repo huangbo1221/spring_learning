@@ -323,6 +323,7 @@ wang~
 ```
 
 (2)
+ByName的自动装配方式，要求bean的id全局唯一
 ```xml
 <!--
   byName:会自动在容器上下文中查找，和自己对象set方法后面的值对应的beanid！
@@ -345,3 +346,162 @@ public void test02() {
 miao~
 wang~
 ```
+
+ByType的自动装配方式，要求bean的class全局唯一
+```xml
+<!--  ByType自动装配，通过set方法的入参类型来自动装配  -->
+    <bean id="person3" class="com.huang.pojo.Person" autowire="byType">
+        <property name="name" value="huangbo1111"></property>
+    </bean>
+```
+
+(3)使用注解的方式自动装配
+* 导入约束
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+```
+
+* 注册bean
+```xml
+<!--  定义一个”手“的bean  -->
+    <bean id="hands" class="com.huang.pojo.Hands"></bean>
+```
+
+* 自动注入
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ * @ClassName Person
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/8 21:09
+ * @Version 1.0
+ */
+@Data
+public class Person {
+    private Cat cat;
+
+    private Dog dog;
+
+    private String name;
+
+    @Autowired
+    private Hands hands;
+}
+
+```
+
+* 验证
+```java
+@Test
+public void test03() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Person person = context.getBean("person2", Person.class);
+    person.getCat().shout();
+    person.getDog().shout();
+    person.getHands().useHands();
+}
+```
+
+* 输出如下
+```java
+miao~
+wang~
+shake hands!
+```
+
+**注意**
+使用@Autowired注解注入bean的时候，可以不用实现set方法，前提是你这个自动装配的属性
+在IOC（Sping）容器中存在，且符合ByType规则！
+如下：当class不唯一的时候，person3的注入就会报错！！！
+
+![img.png](img.png)
+
+当使用@Autowired注解，且bean存在两个一样的class类型时，如下：
+```xml
+<!--  定义一个”手“的bean  -->
+<bean id="hands" class="com.huang.pojo.Hands">
+    <property name="name" value="first"></property>
+</bean>
+<bean id="hands2" class="com.huang.pojo.Hands">
+<property name="name" value="second"></property>
+</bean>
+
+<bean id="monkey" class="com.huang.pojo.Monkey"></bean>
+```
+
+新版的idea不会再报错，而是默认采用第一个class类型，验证如下：
+```java
+@Test
+public void test05() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Monkey monkey = context.getBean("monkey", Monkey.class);
+    System.out.println(monkey.getHands().toString());
+}
+```
+输出如下：
+```shell
+Hands(name=first)
+```
+
+此时，可以采用@Qualifier来指定使用哪一个，如下：
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+/**
+ * @ClassName Monkey
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/8 22:14
+ * @Version 1.0
+ */
+@Data
+public class Monkey {
+
+    @Autowired
+    @Qualifier(value = "hands2")
+    private Hands hands;
+}
+
+```
+
+输出如下：
+```java
+@Test
+public void test05() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Monkey monkey = context.getBean("monkey", Monkey.class);
+    System.out.println(monkey.getHands().toString());
+}
+```
+输出如下：
+```shell
+Hands(name=second)
+```
+
+## @Resource注解
+相当于@Autowired
+@Qualifier(value = "hands2")结合起来使用
+
+小结：
+@Resource和@Autowired的区别
+* 都是用来自动装配的，都可以放在属性字段上；
+* @Autowired通过ByType的方式实现，而且必须要求这个对象存在！【常用】
+* @Resource默认通过ByName的方式实现，如果找不到名字，则通过ByType的方式实现！
+如果两个都找不到的情况下就报错。【常用】
+* 执行顺序不同：@Autowired通过ByType的方式实现，Resource默认通过ByName的方式实现
