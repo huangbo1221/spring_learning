@@ -9,4 +9,13 @@
     <bean id="user" class="com.huang.bo.pojo.User" p:name="huangbo" p:age="18"></bean>
 <!--  p命名空间注入，构造器注入，这里的c就相当于constructor-arg  -->
     <bean id="user2" class="com.huang.bo.pojo.User" c:name="huang" c:age="18"></bean>
+
+
+<!-- 单例模式，spring的默认机制   -->
+    <bean id="user3" class="com.huang.bo.pojo.User" scope="singleton"></bean>
+<!-- 原型模式，每次从容器get的时候，都会产生一个新对象   -->
+    <bean id="user4" class="com.huang.bo.pojo.User" scope="prototype"></bean>
+
+
+
 </beans>

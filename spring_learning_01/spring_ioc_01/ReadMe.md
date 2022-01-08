@@ -258,3 +258,32 @@ name:也是别名，而且name可以同时取多个别名
     <bean id="user2" class="com.huang.bo.pojo.User" c:name="huang" c:age="18"></bean>
 </beans>
 ```
+
+# scope作用域
+```xml
+<!-- 单例模式，spring的默认机制   -->
+    <bean id="user3" class="com.huang.bo.pojo.User" scope="singleton"></bean>
+<!-- 原型模式，每次从容器get的时候，都会产生一个新对象   -->
+    <bean id="user4" class="com.huang.bo.pojo.User" scope="prototype"></bean>
+```
+
+```java
+@Test
+    public void test04() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("userBeans.xml");
+        User user3 = (User) context.getBean("user3");
+        User user4 = (User) context.getBean("user3");
+        System.out.println(user3 == user4);
+    }
+// 输出true
+    
+    @Test
+    public void test05() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("userBeans.xml");
+        User user4 = context.getBean("user4", User.class);
+        User user5 = context.getBean("user4", User.class);
+        System.out.println(user4 == user5);
+    }
+// 输出false
+```
+
