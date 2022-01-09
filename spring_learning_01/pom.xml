@@ -13,6 +13,7 @@
         <module>spring_hello_01</module>
         <module>spring_day_02</module>
         <module>spring_day_03</module>
+        <module>spring_day_anno</module>
     </modules>
 
     <dependencies>

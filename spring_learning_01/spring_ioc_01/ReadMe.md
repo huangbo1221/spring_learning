@@ -505,3 +505,131 @@ Hands(name=second)
 * @Resource默认通过ByName的方式实现，如果找不到名字，则通过ByType的方式实现！
 如果两个都找不到的情况下就报错。【常用】
 * 执行顺序不同：@Autowired通过ByType的方式实现，Resource默认通过ByName的方式实现
+
+# 使用注解开发
+## @Component注解，将类注册成bean，相当于在spring的xml文件里进行配置！
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.stereotype.Component;
+
+/**
+ * @ClassName User
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 17:22
+ * @Version 1.0
+ */
+// 这里的@Component注解相当于xml文件里配置的<bean id="user" class="com.huang.pojo.User"></bean>
+@Component
+@Data
+public class User {
+    private String name = "huangbo1221";
+}
+```
+
+验证结果如下：
+```java
+@Test
+public void test01() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    User user1 = context.getBean("user", User.class);
+    System.out.println(user1.getName());
+    User user2 = context.getBean("user", User.class);
+    System.out.println(user1 == user2);
+    }
+```
+```shell
+huangbo1221
+true
+```
+如上，可以正常获取结果，而且默认采用的单例模式来创建对象
+
+## 属性的注入
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+/**
+ * @ClassName User
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 17:22
+ * @Version 1.0
+ */
+// 这里的@Component注解相当于xml文件里配置的<bean id="user" class="com.huang.pojo.User"></bean>
+@Component
+@Data
+public class User {
+    /**
+     * <bean id="user" class="com.huang.pojo.User">
+     *         <property name="name" value="liubo"></property>
+     * </bean>
+     */
+    @Value("liubo")
+    private String name = "huangbo1221";
+}
+
+```
+验证如下：
+```java
+@Test
+public void test01() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    User user1 = context.getBean("user", User.class);
+    System.out.println(user1.getName());
+}
+```
+输出：
+```shell
+liubo
+```
+可见，生效的是注解上的默认值
+
+## 衍生的注解
+@Component有几个衍生注解，我们在web开发中吗，会按照MVC三层架构分层！
+* dao【@Repository】
+* service【@Service】
+* controller【@Controller】
+这四个注解的功能都是一样的，都是代表将某个类注册到spring中，装配bean。
+
+注意：这些注解的用法及概念不要弄混了，上面的四个注解是标注在一个类上的，作用是将被标注的类注册在spring容器
+中，将类的实例化交给spring管理，完成的是bean的注册。
+@Autowired是标注在类中的成员变量上的，完成的是bean的注入，当一个class A需要一个B类型的变量时，在声明变量
+时加上这个注解，spring会在容器中寻找有没有这个bean。
+
+## 注解注册bean的时候声明scope
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+/**
+ * @ClassName User
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 17:22
+ * @Version 1.0
+ */
+// 这里的@Component注解相当于xml文件里配置的<bean id="user" class="com.huang.pojo.User"></bean>
+@Component
+@Data
+@Scope("singleton")
+public class User {
+    /**
+     * <bean id="user" class="com.huang.pojo.User">
+     *         <property name="name" value="liubo"></property>
+     * </bean>
+     */
+    @Value("liubo")
+    private String name = "huangbo1221";
+}
+```
+将类注册的bian声明为单例的
