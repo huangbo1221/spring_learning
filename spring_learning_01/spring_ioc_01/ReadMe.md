@@ -633,3 +633,132 @@ public class User {
 }
 ```
 将类注册的bian声明为单例的
+
+# 使用java的方式配置spring
+我们现在要完全不使用spring的xml配置了，全权交给java来做。
+javaConfig是spring的一个子项目，在spring4之后，它成为了一个核心功能！
+
+(1)java代码取代xml文件配置
+```java
+package com.huang.config;
+
+import com.huang.pojo.User;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @ClassName MyConfig
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 21:24
+ * @Version 1.0
+ */
+@Configuration // 这个也会被spring容器托管，注册到容器中，因为它本来就是一个@Component。@Configuration代表
+// 这是一个配置类，就相当于spring配置的beans.xml
+@ComponentScan("com.huang.pojo") // 相当于<context:component-scan base-package="com.huang"/>
+public class MyConfig {
+    @Bean // 这个注解只能用在方法上，相当于之前在xml配置的bean标签
+    // 这个方法的名字，就相当于bean标签的id属性
+    // 这个方法的返回值，就相当于bean标签中的class属性
+    public User getUser() {
+        return new User();
+    }
+
+}
+```
+
+（2）测试的pojo类
+```java
+package com.huang.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+/**
+ * @ClassName User
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 21:24
+ * @Version 1.0
+ */
+@Data
+public class User {
+    @Value("liubo1221")
+    private String name;
+}
+```
+
+（3）测试类
+```java
+import com.huang.config.MyConfig;
+import com.huang.pojo.User;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+/**
+ * @ClassName MyTest
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 21:25
+ * @Version 1.0
+ */
+public class MyTest {
+    @Test
+    public void test01() {
+        ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class);
+        User user = context.getBean("getUser", User.class);
+        System.out.println(user.getName());
+    }
+}
+```
+(4)输出如下
+```shell
+liubo1221
+```
+可见，完全通过java代码也可以完成所有spring配置的功能。
+
+（5）来点小变化，如下：
+
+![img_1.png](img_1.png)
+
+用@component将User类直接注册到容器中，通过javaConfig方法获取到的bean和通过@component获取到bean
+是否一致呢？
+验证代码如下：
+```java
+import com.huang.config.MyConfig;
+import com.huang.pojo.User;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+/**
+ * @ClassName MyTest
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/9 21:25
+ * @Version 1.0
+ */
+public class MyTest {
+    @Test
+    public void test01() {
+        ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class);
+        User user1 = context.getBean("getUser", User.class);
+        System.out.println(user1.getName());
+
+        User user2 = context.getBean("user", User.class);
+        System.out.println(user2.getName());
+
+        System.out.println(user1 == user2);
+    }
+}
+```
+
+```shell
+liubo1221
+liubo1221
+false
+```
+**注意**：此时容器中有两个User类型的bean，一个bean的id为user，一个bean的id为getUser。
