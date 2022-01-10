@@ -800,3 +800,10 @@ false
 需要了解两个类：Proxy：代理     InvocationHandler：调用处理程序
 一定要掌握Proxy和InvocationHandler，然后结合com.huang.demo3.ProxyInvocationHandler
 的实例看一下动态代理的用法！！！
+
+![img_2.png](img_2.png)
+
+而且，调不到实现类自身的方法！
+
+# 使用spring的方式实现AOP
+方式一、

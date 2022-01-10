@@ -16,6 +16,7 @@
         <module>spring_day_anno</module>
         <module>spring_day_javaconfig</module>
         <module>spring_day_proxy</module>
+        <module>spring_day_aop</module>
     </modules>
 
     <dependencies>
