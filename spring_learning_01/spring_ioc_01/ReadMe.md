@@ -821,3 +821,115 @@ false
 ```
 
 方式二、自定义切面类【主要是切面定义】
+```xml
+<!-- 方式二、自定义前面类  -->
+<bean id="diy" class="com.huang.diy.DiyPointCut"></bean>
+
+<aop:config>
+<!--    自定义切面，ref要引用的类    -->
+    <aop:aspect ref="diy">
+<!--     切入点       -->
+        <aop:pointcut id="point" expression="execution(* com.huang.service.UserServiceImpl.*(..))"/>
+<!--     通知       -->
+        <aop:before method="before" pointcut-ref="point"></aop:before>
+        <aop:after method="after" pointcut-ref="point"></aop:after>
+    </aop:aspect>
+</aop:config>
+```
+
+方式三、注解实现
+```xml
+<!-- 方式三、注解实现   -->
+<bean id="annotationPointCut" class="com.huang.diy.AnnotationPointCut"></bean>
+<!--  开启注解支持！ 基于接口的动态代理->JDK（proxy-target-class="false"时，默认就是false） 基于cglib（proxy-target-class="true"）
+  两种方式的结果区别：jdk只能代理接口实现类，而cglib可以代理没有实现接口的类
+  -->
+<aop:aspectj-autoproxy proxy-target-class="false"/>
+```
+
+```java
+package com.huang.diy;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+
+/**
+ * @ClassName AnnotationPointCut
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/11 22:02
+ * @Version 1.0
+ */
+@Aspect // 定义切面
+public class AnnotationPointCut {
+    // 定义切入点
+    @Before("execution(* com.huang.service.UserServiceImpl.*(..))")
+    public void before() {
+        System.out.println("方法执行前！");
+    }
+
+    @After("execution(* com.huang.service.UserServiceImpl.*(..))")
+    public void after() {
+        System.out.println("方法执行后！");
+    }
+}
+```
+
+注意@around 环绕增强注解的使用
+```java
+package com.huang.diy;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+
+/**
+ * @ClassName AnnotationPointCut
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/11 22:02
+ * @Version 1.0
+ */
+@Aspect // 定义切面
+public class AnnotationPointCut {
+    // 定义切入点
+    @Before("execution(* com.huang.service.UserServiceImpl.*(..))")
+    public void before() {
+        System.out.println("方法执行前！");
+    }
+
+    @After("execution(* com.huang.service.UserServiceImpl.*(..))")
+    public void after() {
+        System.out.println("方法执行后！");
+    }
+
+    @Around("execution(* com.huang.service.UserServiceImpl.*(..))")
+    public void around(ProceedingJoinPoint pjp) throws Throwable {
+        System.out.println("环绕前！");
+        pjp.proceed();
+        System.out.println("环绕后！");
+    }
+}
+```
+
+测试
+```java
+@Test
+public void test03() {
+    ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    UserService userService = context.getBean("userService", UserService.class);
+    userService.add();
+}
+```
+
+输出如下：
+```shell
+环绕前！
+方法执行前！
+这是一个add方法
+方法执行后！
+环绕后！
+```

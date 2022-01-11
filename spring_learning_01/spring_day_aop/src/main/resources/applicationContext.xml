@@ -23,16 +23,23 @@
 <!--    </aop:config>-->
 
 <!-- 方式二、自定义前面类  -->
-    <bean id="diy" class="com.huang.diy.DiyPointCut"></bean>
+<!--    <bean id="diy" class="com.huang.diy.DiyPointCut"></bean>-->
 
-    <aop:config>
+<!--    <aop:config>-->
 <!--    自定义切面，ref要引用的类    -->
-        <aop:aspect ref="diy">
+<!--        <aop:aspect ref="diy">-->
 <!--     切入点       -->
-            <aop:pointcut id="point" expression="execution(* com.huang.service.UserServiceImpl.*(..))"/>
+<!--            <aop:pointcut id="point" expression="execution(* com.huang.service.UserServiceImpl.*(..))"/>-->
 <!--     通知       -->
-            <aop:before method="before" pointcut-ref="point"></aop:before>
-            <aop:after method="after" pointcut-ref="point"></aop:after>
-        </aop:aspect>
-    </aop:config>
+<!--            <aop:before method="before" pointcut-ref="point"></aop:before>-->
+<!--            <aop:after method="after" pointcut-ref="point"></aop:after>-->
+<!--        </aop:aspect>-->
+<!--    </aop:config>-->
+
+<!-- 方式三、注解实现   -->
+    <bean id="annotationPointCut" class="com.huang.diy.AnnotationPointCut"></bean>
+<!--  开启注解支持！ 基于接口的动态代理->JDK（proxy-target-class="false"时，默认就是false） 基于cglib（proxy-target-class="true"）
+  两种方式的结果区别：jdk只能代理接口实现类，而cglib可以代理没有实现接口的类
+  -->
+    <aop:aspectj-autoproxy proxy-target-class="false"/>
 </beans>
