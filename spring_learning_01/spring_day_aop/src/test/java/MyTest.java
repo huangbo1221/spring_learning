@@ -18,4 +18,11 @@ public class MyTest {
         UserService userService = context.getBean("userService", UserService.class);
         userService.add();
     }
+
+    @Test
+    public void test02() {
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        UserService userService = context.getBean("userService", UserService.class);
+        userService.add();
+    }
 }

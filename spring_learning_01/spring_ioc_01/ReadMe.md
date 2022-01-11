@@ -806,4 +806,18 @@ false
 而且，调不到实现类自身的方法！
 
 # 使用spring的方式实现AOP
-方式一、
+方式一、使用原生的spring api接口【主要是spring api接口实现】
+```xml
+<!-- 方式一： 使用原生的spring api接口   -->
+<!-- 配置aop：需要导入aop约束   -->
+<aop:config>
+    <!--   切入点： expression表达式，execution（要执行的位置！  * * * * * *表示格式，需要下去查一下资料）    -->
+    <aop:pointcut id="pointcut" expression="execution(* com.huang.service.UserServiceImpl.*(..))"/>
+
+<!--   执行环绕增强     -->
+    <aop:advisor advice-ref="log" pointcut-ref="pointcut"></aop:advisor>
+    <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"></aop:advisor>
+</aop:config>
+```
+
+方式二、自定义切面类【主要是切面定义】
