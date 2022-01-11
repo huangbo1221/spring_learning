@@ -15,6 +15,7 @@
         <module name="spring_day_javaconfig" />
         <module name="spring_day_02" />
         <module name="spring_day_anno" />
+        <module name="spring_day_mybatis" />
       </profile>
     </annotationProcessing>
   </component>
