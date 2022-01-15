@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!--核心配置文件-->
+<configuration>
+<!-- environments表示环境，这里的environments是复数，表示可以有多套环境，默认取 环境id叫development的环境  -->
+    <environments default="development">
+<!--   environment id="development"，此套环境的环境id叫 development    -->
+        <environment id="development">
+<!--    transactionManager，默认用JDBC的事务管理        -->
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!--数据库驱动-->
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <!--&amp在这里就表示&符号，如果不使用amp，xml文件会报错-->
+                <property name="url" value="jdbc:mysql://localhost:3306/smbms?useSSL=true&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="123456"/>
+            </dataSource>
+        </environment>
+<!--    环境id叫test的环境    -->
+        <environment id="test">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+<!--  每一个mapper配置文件都需要爱mybatis核心配置文件中注册，否则运行时会找不到映射关系  -->
+<!--  可以一个个扫描，也可以在mappers标签里面配置包扫描  -->
+    <mappers>
+        <!--一个个注册-->
+        <mapper resource="com/huang/dao/UserMapper.xml"/>
+        <!--包扫描-->
+<!--        <package name="com.huang.dao"/>-->
+    </mappers>
+</configuration>
