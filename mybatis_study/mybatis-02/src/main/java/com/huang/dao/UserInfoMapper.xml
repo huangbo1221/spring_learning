@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace:命名空间，想要与哪个dao/mapper的接口扯上关系，就要映射到哪里。这里的配置文件实际就取到了以前实现的dao的实现类-->
+<mapper namespace="com.huang.dao.UserInfoMapper">
+    <resultMap id="resUserInfo" type="UserInfo">
+        <!--column表示数据库字段，property表示实体类的属性 -->
+        <!--id属性可以不用写出来，即下面的第一行可以注释掉。数据库字段和实体类字段一致
+         时，会自动匹配-->
+        <result column="id" property="id"></result>
+        <result column="userName" property="name"></result>
+        <result column="userCode" property="code"></result>
+    </resultMap>
+<!--    <select id="getUserById" parameterType="Integer" resultType="UserInfo">-->
+<!--        select id, userName as name , userCode as code from smbms_user where id = #{id}-->
+<!--    </select>-->
+
+    <select id="getUserById" parameterType="Integer" resultMap="resUserInfo">
+        select id, userName, userCode from smbms_user where id = #{id}
+    </select>
+</mapper>

@@ -456,3 +456,89 @@ key时，则外部配置文件的值会覆盖property属性的值。因为，低
 * 用完之后需要赶紧关闭，否则资源被占用
 
 ![img_3.png](img_3.png)
+
+#### 解决属性名和字段名不一致的问题
+数据库字段如下：
+
+![img_4.png](img_4.png)
+
+实体类字段如下：
+
+![img_5.png](img_5.png)
+
+测试结果如下：
+```java
+package com.huang.dao;
+
+import com.huang.pojo.User;
+import com.huang.pojo.UserInfo;
+import com.huang.utils.MybatisUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.junit.Test;
+
+import java.util.List;
+
+/**
+ * @ClassName UserDaoTest
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/15 21:27
+ * @Version 1.0
+ */
+public class UserInfoMapperTest {
+    @Test
+    public void test02() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+            UserInfo user = mapper.getUserById(1);
+            System.out.println(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+}
+```
+
+结果如下：
+```shell
+UserInfo(id=1, name=null, code=null)
+```
+
+name和code字段为空。很好理解，因为执行的sql相当于如下：
+```xml
+select id, userName, userCode from smbms_user where id = #{id}
+```
+实体类没有字段和userName、userCode一一映射！
+
+解决办法一：
+```shell
+select id, userName as name , userCode as code from smbms_user where id = #{id}
+```
+
+解决办法二：
+resultMap结果集映射
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace:命名空间，想要与哪个dao/mapper的接口扯上关系，就要映射到哪里。这里的配置文件实际就取到了以前实现的dao的实现类-->
+<mapper namespace="com.huang.dao.UserInfoMapper">
+    <resultMap id="resUserInfo" type="UserInfo">
+        <!--column表示数据库字段，property表示实体类的属性 -->
+        <!--id属性可以不用写出来，即下面的第一行可以注释掉。数据库字段和实体类字段一致
+         时，会自动匹配-->
+        <result column="id" property="id"></result>
+        <result column="userName" property="name"></result>
+        <result column="userCode" property="code"></result>
+    </resultMap>
+    <select id="getUserById" parameterType="Integer" resultMap="resUserInfo">
+        select id, userName, userCode from smbms_user where id = #{id}
+    </select>
+</mapper>
+```
