@@ -5,7 +5,9 @@ import com.huang.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName UserDaoTest
@@ -105,6 +107,27 @@ public class UserDaoTest {
             sqlSession = MybatisUtils.getSqlSession();
             UserMapper mapper = sqlSession.getMapper(UserMapper.class);
             mapper.deleteUserById(3);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void  test06() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", 9);
+            userMap.put("name", "bobo");
+            userMap.put("code", "666666");
+            userMap.put("address", "beijing");
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            mapper.addUserByMap(userMap);
             sqlSession.commit();
         } catch (Exception e) {
             e.printStackTrace();

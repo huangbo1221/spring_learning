@@ -3,6 +3,7 @@ package com.huang.dao;
 import com.huang.pojo.User;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName UserDao
@@ -20,6 +21,9 @@ public interface UserMapper {
 
     // 增加一个用户
     public void addUser(User user);
+
+    // 增加一个用户，利用map传参
+    public void addUserByMap(Map<String, Object> map);
 
     // 更新用户
     void updateUserById(User user);

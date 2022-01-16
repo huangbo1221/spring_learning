@@ -17,6 +17,14 @@
         insert into smbms_user (id, userName, userCode) values (#{id}, #{userName}, #{userCode})
     </insert>
 
+    <!--
+      map中的值属性，可以直接取出来
+      values后面的参数，key可以按照自定义的key来，不受传参对象的限制
+      -->
+    <insert id="addUserByMap" parameterType="Map">
+        insert into smbms_user (id, userName, userCode, address) values (#{id}, #{name}, #{code}, #{address})
+    </insert>
+
     <update id="updateUserById" parameterType="com.huang.pojo.User">
         update smbms_user
         set userName = #{userName}, userCode = #{userCode}

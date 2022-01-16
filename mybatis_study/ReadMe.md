@@ -296,5 +296,41 @@ public interface UserMapper {
     // 删除一个用户
     void deleteUserById(Integer id);
 }
-
 ```
+
+### 万能的map
+map中的值属性，可以直接在mapper中取出来
+values后面的参数，key可以按照自定义的key来，不受传参对象的限制
+```xml
+<!--
+  map中的值属性，可以直接取出来
+  values后面的参数，key可以按照自定义的key来，不受传参对象的限制
+  -->
+<insert id="addUserByMap" parameterType="Map">
+    insert into smbms_user (id, userName, userCode, address) values (#{id}, #{name}, #{code}, #{address})
+</insert>
+```
+
+```java
+ @Test
+public void  test06() {
+    SqlSession sqlSession = null;
+
+    try {
+        sqlSession = MybatisUtils.getSqlSession();
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("id", 9);
+        userMap.put("name", "bobo");
+        userMap.put("code", "666666");
+        userMap.put("address", "beijing");
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        mapper.addUserByMap(userMap);
+        sqlSession.commit();
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        sqlSession.close();
+    }
+}
+```
+
