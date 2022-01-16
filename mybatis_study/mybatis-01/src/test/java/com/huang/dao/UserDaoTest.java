@@ -22,8 +22,8 @@ public class UserDaoTest {
 
         // 执行sql的所有方式
         // 方式一：getMapper
-        UserDao userDao = sqlSession.getMapper(UserDao.class);
-        List<User> userList = userDao.getUserList();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<User> userList = userMapper.getUserList();
         userList.forEach(user -> System.out.println(user));
 
         System.out.println("===============================================");
@@ -35,4 +35,81 @@ public class UserDaoTest {
         sqlSession.close();
     }
 
+    @Test
+    public void test02() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            User user = mapper.getUserById(1);
+            System.out.println(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    /**
+     * 增删改必须提交事务！！！否则数据不会更新到数据库
+     */
+    @Test
+    public void test03() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            User user = new User();
+            user.setId(3);
+            user.setUserName("huangbo");
+            user.setUserCode("5151515");
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            mapper.addUser(user);
+            // 提交事务
+            sqlSession.commit();
+            User user1 = mapper.getUserById(3);
+            System.out.println(user1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test04() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            User user = new User();
+            user.setId(3);
+            user.setUserName("liubo");
+            user.setUserCode("777777");
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            mapper.updateUserById(user);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test05() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            mapper.deleteUserById(3);
+            sqlSession.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
 }

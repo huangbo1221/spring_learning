@@ -230,3 +230,71 @@ User(id=15, userName=赵敏, userCode=zhaomin)
 针对两种方法，官方解释如下：
 
 ![img.png](img.png)
+
+### CRUD
+1、namespace中的包名要和Dao/mapper接口的包名一致
+2、增删改查。note：增删改需要提交事务才能更新数据库
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace:命名空间，想要与哪个dao/mapper的接口扯上关系，就要映射到哪里。这里的配置文件实际就取到了以前实现的dao的实现类-->
+<mapper namespace="com.huang.dao.UserMapper">
+    <select id="getUserList" resultType="com.huang.pojo.User">
+        select id, userCode, userName from smbms_user
+    </select>
+
+    <select id="getUserById" parameterType="Integer" resultType="com.huang.pojo.User">
+        select id, userName, userCode from smbms_user where id = #{id}
+    </select>
+
+    <!--对象中的属性，可以直接取出来-->
+    <insert id="addUser" parameterType="com.huang.pojo.User">
+        insert into smbms_user (id, userName, userCode) values (#{id}, #{userName}, #{userCode})
+    </insert>
+
+    <update id="updateUserById" parameterType="com.huang.pojo.User">
+        update smbms_user
+        set userName = #{userName}, userCode = #{userCode}
+        where id = #{id};
+    </update>
+
+    <delete id="deleteUserById" parameterType="Integer">
+        delete from smbms_user where id = #{id}
+    </delete>
+</mapper>
+```
+
+```java
+package com.huang.dao;
+
+import com.huang.pojo.User;
+
+import java.util.List;
+
+/**
+ * @ClassName UserDao
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/15 21:04
+ * @Version 1.0
+ */
+public interface UserMapper {
+    // 获取全部用户
+    List<User> getUserList();
+
+    // 根据id查询用户
+    User getUserById(Integer id);
+
+    // 增加一个用户
+    public void addUser(User user);
+
+    // 更新用户
+    void updateUserById(User user);
+
+    // 删除一个用户
+    void deleteUserById(Integer id);
+}
+
+```
