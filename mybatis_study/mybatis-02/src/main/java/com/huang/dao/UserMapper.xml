@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace:命名空间，想要与哪个dao/mapper的接口扯上关系，就要映射到哪里。这里的配置文件实际就取到了以前实现的dao的实现类-->
+<mapper namespace="com.huang.dao.UserMapper">
+    <select id="getUserList" resultType="User">
+        select id, userCode, userName from smbms_user
+    </select>
+
+    <select id="getUserById" parameterType="Integer" resultType="User">
+        select id, userName, userCode from smbms_user where id = #{id}
+    </select>
+
+    <!--对象中的属性，可以直接取出来-->
+    <insert id="addUser" parameterType="User">
+        insert into smbms_user (id, userName, userCode) values (#{id}, #{userName}, #{userCode})
+    </insert>
+
+    <update id="updateUserById" parameterType="User">
+        update smbms_user
+        set userName = #{userName}, userCode = #{userCode}
+        where id = #{id};
+    </update>
+
+    <delete id="deleteUserById" parameterType="Integer">
+        delete from smbms_user where id = #{id}
+    </delete>
+</mapper>

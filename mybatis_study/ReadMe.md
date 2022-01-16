@@ -334,3 +334,108 @@ public void  test06() {
 }
 ```
 
+### 配置解析
+```xml
+configuration（配置）
+properties（属性）
+settings（设置）
+typeAliases（类型别名）
+typeHandlers（类型处理器）
+objectFactory（对象工厂）
+plugins（插件）
+environments（环境配置）
+environment（环境变量）
+transactionManager（事务管理器）
+dataSource（数据源）
+databaseIdProvider（数据库厂商标识）
+mappers（映射器）
+```
+
+#### environments
+MyBatis 可以配置成适应多种环境，这种机制有助于将 SQL 映射应用于多种
+数据库之中， 现实情况下有多种理由需要这么做。例如，开发、测试和生产环境
+需要有不同的配置；或者想在具有相同 Schema 的多个生产数据库中使用相同的
+SQL 映射。还有许多类似的使用场景。
+**尽管可以配置多个环境，但每个 SqlSessionFactory 实例只能选择一种环境。**
+
+#### 属性（properties）
+我们可以通过properties属性来实现应用配置文件.
+这些属性可以在外部进行配置，并可以进行动态替换。你既可以在典型的 
+Java 属性文件中配置这些属性，也可以在 properties 元素的子元素中设置。
+(1)编写db.properties文件
+```properties
+driver=com.mysql.jdbc.Driver
+url=jdbc:mysql://localhost:3306/smbms?useSSL=true&useUnicode=true&characterEncoding=UTF-8
+username=root
+password=123456
+```
+(2)在核心配置文件中引入该文件
+如果在mybatis-config.xml文件最后面使用properties标签，则会出现如下报错：
+![img_1.png](img_1.png)
+
+表明，标签的配置都是有其使用顺序的！！！
+```properties
+ <!-- 引入外部配置文件    -->
+<properties resource="db.properties">
+    <property name="password" value="11111"/>
+</properties>
+```
+* 可以直接引入外部配置文件
+* 可以在properties标签里面增加属性
+   外部配置文件优先级最低，但是若property对应的属性和外部配置文件具有相同的
+key时，则外部配置文件的值会覆盖property属性的值。因为，低优先级时最后读取的！
+
+#### 类型别名（typeAliases）
+类型别名可为 Java 类型设置一个缩写名字。 它仅用于 XML 配置，意在降低冗余的全限定类名书写。
+方式1：
+直接指定某个类
+```xml
+<!--给实体类起别名-->
+<typeAliases>
+    <typeAlias type="com.huang.pojo.User" alias="User"/>
+</typeAliases>
+```
+方式2：
+扫描包
+```xml
+<!--给实体类起别名-->
+<typeAliases>
+    <package name="com.huang.pojo"/>
+</typeAliases>
+```
+![img_2.png](img_2.png)
+
+虽然官方文档说会用小写首字母作为别名，但是实际上大写也是可以的！
+
+#### 映射器（mappers）
+方式一：
+```xml
+<mappers>
+    <!--一个个注册-->
+    <mapper resource="com/huang/dao/UserMapper.xml"/>
+</mappers>
+```
+
+方式二：使用class文件绑定注册
+```xml
+<mappers>
+    <!--class引入-->
+    <mapper class="com.huang.dao.UserMapper"/>
+</mappers>
+```
+**注意**：
+* 接口和他的mapper配置文件必须同名！
+* 接口和他的mapper配置文件必须在同一个包下！
+
+方式三：
+包扫描
+```xml
+<mappers>
+        <!--包扫描-->
+    <package name="com.huang.dao"/>
+</mappers>
+```
+**注意**：
+* 接口和他的mapper配置文件必须同名！
+* 接口和他的mapper配置文件必须在同一个包下！
+  可以在resources下面建一个同名目录来放置mapper配置文件
