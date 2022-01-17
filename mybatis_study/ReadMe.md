@@ -542,3 +542,135 @@ resultMap结果集映射
     </select>
 </mapper>
 ```
+
+### 日志
+#### 日志工厂
+如果数据库操作出现了异常，我们需要拍错，日志时最好的助手！
+
+![img_6.png](img_6.png)
+
+SLF4J
+LOG4J(deprecated since 3.5.9)
+LOG4J2【掌握】
+JDK_LOGGING
+COMMONS_LOGGING
+STDOUT_LOGGING【掌握】
+NO_LOGGING
+
+在mybatis中具体使用哪一个日志实现，在设置中指定。
+STDOUT_LOGGING：标准日志输出
+
+```xml
+<settings>
+    <setting name="logImpl" value="STDOUT_LOGGING"/>
+</settings>
+```
+
+执行sql时输出如下：
+
+![img_7.png](img_7.png)
+
+#### log4j2
+* Log4j是Apache的一个开源项目，通过使用Log4j，我们可以控制日志信息输 送的目的地是控制台、文件、GUI组件，甚至是套接口
+服务器、NT的事件记录器、 UNIX Syslog守护进程等；
+* 我们也可以控制每一条日志的输出格式；
+* 通过定义 每一条日志信息的级别，我们能够更加细致地控制日志的生成过程。最令人感兴 趣的就是，这些可以通过一个配置文件来灵活地进行配置，而不需要修改应用的代码。
+
+1、先导入log4j2的包
+```xml
+<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+```
+
+2、log4j.properties
+```properties
+# 将等级为debug的日志信息输出到console和file两个目的地，console和file的定义见下面的代码
+log4j.rootLogger=DEBUG,console,file
+
+# 控制台输出的相关设置
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.Target=System.out
+log4j.appender.console.Threshold=DEBUG
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=[%c]-%m%n
+
+# 文件输出的相关设置
+log4j.appender.file=org.apache.log4j.RollingFileAppender
+log4j.appender.file.File=./log/bo.log
+log4j.appender.file.MaxFileSize=10mb
+log4j.appender.file.Threshold=DEBUG
+log4j.appender.file.layout=org.apache.log4j.PatternLayout
+log4j.appender.file.layout.ConversionPattern=[%p][%d{yy-MM-dd}][%c]-%m%n
+
+# 日志输出级别
+log4j.logger.org.mybatis=DEBUG
+log4j.logger.java.sql=DEBUG
+log4j.logger.java.sql.Statement=DEBUG
+log4j.logger.java.sql.ResultSet=DEBUG
+log4j.logger.java.sql.PrepareStatement=DEBUG
+```
+
+3、配置log4j为日志的实现
+```xml
+<settings>
+    <setting name="logImpl" value="LOG4J"/>
+</settings>
+```
+
+4、log4j的使用
+
+![img_8.png](img_8.png)
+
+简单使用
+```java
+package com.huang.dao;
+
+import com.huang.pojo.User;
+import com.huang.pojo.UserInfo;
+import com.huang.utils.MybatisUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import java.util.List;
+
+/**
+ * @ClassName UserDaoTest
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/15 21:27
+ * @Version 1.0
+ */
+public class UserInfoMapperTest {
+    private static final Logger logger = Logger.getLogger(UserInfoMapperTest.class);
+
+    @Test
+    public void test02() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            UserInfoMapper mapper = sqlSession.getMapper(UserInfoMapper.class);
+            UserInfo user = mapper.getUserById(1);
+            System.out.println(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test01() {
+        logger.info("enter UserInfoMapperTest.test01 method!");
+        System.out.println("hhhhhh");
+        logger.info("finish test01 method!");
+    }
+}
+```
+
+![img_9.png](img_9.png)

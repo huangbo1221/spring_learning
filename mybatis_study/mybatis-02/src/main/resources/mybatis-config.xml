@@ -8,6 +8,10 @@
     <properties resource="db.properties">
         <property name="password" value="11111"/>
     </properties>
+
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
     
     <typeAliases>
         <package name="com.huang.pojo"/>
