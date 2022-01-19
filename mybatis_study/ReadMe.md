@@ -674,3 +674,38 @@ public class UserInfoMapperTest {
 ```
 
 ![img_9.png](img_9.png)
+
+### 分页
+#### Limit实现分页
+```xml
+<select id="getUserByLimit" parameterType="Map" resultMap="resUserInfo">
+    select id, userName, userCode from smbms_user limit #{startIndex}, #{pageSize}
+</select>
+```
+
+#### RowBounds实现分页
+```xml
+<!--  sql先查出所有的用户  -->
+<select id="getUserByRowBounds" resultMap="resUserInfo">
+    select id, userName, userCode from smbms_user
+</select>
+```
+
+```java
+ @Test
+public void test04() {
+    SqlSession sqlSession = null;
+
+    try {
+        sqlSession = MybatisUtils.getSqlSession();
+        // 采用RowBounds来实现分页
+        RowBounds rowBounds = new RowBounds(0, 2);
+        List<UserInfo> userInfos = sqlSession.selectList("com.huang.dao.UserInfoMapper.getUserByRowBounds", null, rowBounds);
+        userInfos.forEach(userInfo -> System.out.println(userInfo));
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        sqlSession.close();
+    }
+}
+```

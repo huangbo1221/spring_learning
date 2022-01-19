@@ -6,11 +6,11 @@
 <configuration>
     <!-- 引入外部配置文件    -->
     <properties resource="db.properties">
-        <property name="password" value="11111"/>
+        <property name="password" value="123456"/>
     </properties>
 
     <settings>
-        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <setting name="logImpl" value="LOG4J"/>
     </settings>
     
     <typeAliases>

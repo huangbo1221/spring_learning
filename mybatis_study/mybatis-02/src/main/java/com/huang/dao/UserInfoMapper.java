@@ -4,6 +4,7 @@ import com.huang.pojo.User;
 import com.huang.pojo.UserInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @ClassName UserDao
@@ -15,4 +16,10 @@ import java.util.List;
 public interface UserInfoMapper {
     // 根据id查询用户
     UserInfo getUserById(Integer id);
+
+    // 分页查询数据
+    List<UserInfo> getUserByLimit(Map<String, Object> map);
+
+    // 通过RowBounds分页
+    List<UserInfo> getUserByRowBounds();
 }

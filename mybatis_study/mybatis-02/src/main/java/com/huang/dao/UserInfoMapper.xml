@@ -19,4 +19,13 @@
     <select id="getUserById" parameterType="Integer" resultMap="resUserInfo">
         select id, userName, userCode from smbms_user where id = #{id}
     </select>
+
+    <select id="getUserByLimit" parameterType="Map" resultMap="resUserInfo">
+        select id, userName, userCode from smbms_user limit #{startIndex}, #{pageSize}
+    </select>
+
+<!--  sql先查出所有的用户  -->
+    <select id="getUserByRowBounds" resultMap="resUserInfo">
+        select id, userName, userCode from smbms_user
+    </select>
 </mapper>
