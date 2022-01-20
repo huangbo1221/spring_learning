@@ -709,3 +709,42 @@ public void test04() {
     }
 }
 ```
+
+#### 使用pageHelper分页插件
+
+![img_10.png](img_10.png)
+
+### 使用注解开发 mybatis-03模块
+#### dao文件开发（不需在写mapper.xml文件！）
+```java
+package huang.dao;
+
+import huang.pojo.User;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @ClassName UserDao
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/1/15 21:04
+ * @Version 1.0
+ */
+public interface UserMapper {
+    // 获取全部用户
+    @Select("select id, userCode, userName from smbms_user")
+    List<User> getUserList();
+}
+```
+
+#### xml文件注册接口
+```xml
+<mappers>
+    <!--一个个注册-->
+    <mapper class="huang.dao.UserMapper"/>
+</mappers>
+```
+
+**核心：** mybatis底层就是反射加动态代理！
