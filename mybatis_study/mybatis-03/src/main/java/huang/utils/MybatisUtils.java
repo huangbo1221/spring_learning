@@ -45,4 +45,10 @@ public class MybatisUtils {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         return sqlSession;
     }
+
+    public static SqlSession getAutoCommitSqlSession() {
+        // 这里针对openSession(true)穿参为true，表示针对增、删、改的方法，不需要再手动执行autoCommit（事务的提交）
+        SqlSession sqlSession = sqlSessionFactory.openSession(true);
+        return sqlSession;
+    }
 }
