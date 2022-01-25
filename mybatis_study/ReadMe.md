@@ -786,3 +786,33 @@ public interface UserMapper {
 ```
 
 #### 注意#{}和${}的区别！！！
+
+### 多对一
+#### 了解外键的概念
+```mysql
+CREATE TABLE `teacher` (
+`id` INT(10) NOT NULL,
+`name` VARCHAR(30) DEFAULT NULL,
+PRIMARY  KEY(`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
+
+INSERT INTO teacher (id, NAME) VALUES (1, 'huangbo');  
+
+CREATE TABLE `student` (
+`id` INT(10) NOT NULL PRIMARY KEY,
+`name` VARCHAR(30) DEFAULT NULL,
+`tid` INT(10) DEFAULT NULL,
+KEY `fktid` (`tid`),
+CONSTRAINT `fktid` FOREIGN KEY (`tid`) REFERENCES `teacher` (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+
+INSERT INTO student (id, NAME, tid) VALUES(1,'xiaoming', 1); -- success
+INSERT INTO student (id, NAME, tid) VALUES(2,'xiaohuang', 1);-- success
+INSERT INTO student (id, NAME, tid) VALUES(3,'xiaozhang', 1);-- success
+INSERT INTO student (id, NAME, tid) VALUES(4,'xiaoli', 1);-- success
+INSERT INTO student (id, NAME, tid) VALUES(5,'xiaochen', 1);-- success
+INSERT INTO student (id, NAME, tid) VALUES(6,'xiaohong', 2);-- failed!
+```
+
+![img_11.png](img_11.png)
+
