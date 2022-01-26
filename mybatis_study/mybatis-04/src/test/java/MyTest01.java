@@ -1,4 +1,6 @@
+import huang.dao.StudentMapper;
 import huang.dao.TeacherMapper;
+import huang.pojo.Student;
 import huang.pojo.Teacher;
 import huang.utils.MybatisUtils;
 import org.apache.ibatis.session.SqlSession;
@@ -23,6 +25,38 @@ public class MyTest01 {
             TeacherMapper mapper = sqlSession.getMapper(TeacherMapper.class);
             List<Teacher> allTeachers = mapper.getAllTeachers();
             allTeachers.forEach(t -> System.out.println(t));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test02() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            StudentMapper mapper = sqlSession.getMapper(StudentMapper.class);
+            List<Student> students = mapper.getAllStudents();
+            students.forEach(t -> System.out.println(t));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test03() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            StudentMapper mapper = sqlSession.getMapper(StudentMapper.class);
+            List<Student> students = mapper.getAllStudents2();
+            students.forEach(t -> System.out.println(t));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

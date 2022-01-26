@@ -816,3 +816,53 @@ INSERT INTO student (id, NAME, tid) VALUES(6,'xiaohong', 2);-- failed!
 
 ![img_11.png](img_11.png)
 
+#### 按照查询嵌套处理
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--核心配置文件-->
+<mapper namespace="huang.dao.StudentMapper">
+    <select id="getAllStudents" resultMap="studentModel">
+        select id, name, tid from student
+    </select>
+
+    <resultMap id="studentModel" type="huang.pojo.Student">
+        <result property="id" column="id"></result>
+        <result property="name" column="name"></result>
+        <association property="teacher" column="tid" javaType="huang.pojo.Teacher" select="getTeacher"></association>
+    </resultMap>
+
+    <select id="getTeacher" resultType="huang.pojo.Teacher">
+        select id, name from teacher where id = #{tid}
+    </select>
+</mapper>
+```
+
+![img_12.png](img_12.png)
+
+就相当于嵌套查询
+
+#### 按照查询结果处理
+```xml
+<resultMap id="stuModel" type="huang.pojo.Student">
+    <result property="id" column="sid"></result>
+    <result property="name" column="sname"></result>
+    <association property="teacher" javaType="huang.pojo.Teacher">
+        <result property="id" column="tid"></result>
+        <result property="name" column="tname"></result>
+    </association>
+</resultMap>
+
+<select id="getAllStudents2" resultMap="stuModel">
+    SELECT
+        stu.id as sid,
+        stu.`name` as sname,
+        t.id as tid,
+        t.`name` as tname
+    FROM
+        student stu
+    LEFT JOIN teacher t ON t.id = stu.tid
+</select>
+```

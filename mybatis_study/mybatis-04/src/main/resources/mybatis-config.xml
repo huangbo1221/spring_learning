@@ -32,6 +32,6 @@
     </environments>
 
     <mappers>
-        <mapper class="huang.dao.TeacherMapper"></mapper>
+        <package name="huang.dao"/>
     </mappers>
 </configuration>
