@@ -2,6 +2,8 @@ package huang.pojo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @ClassName Teacher
  * @Description TODO
@@ -14,4 +16,9 @@ public class Teacher {
     private Integer id;
 
     private String name;
+
+    /**
+     * 一个老师必定带多个学生
+     */
+    private List<Student> students;
 }

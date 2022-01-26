@@ -63,4 +63,20 @@ public class MyTest01 {
             sqlSession.close();
         }
     }
+
+    @Test
+    public void test04() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            TeacherMapper mapper = sqlSession.getMapper(TeacherMapper.class);
+            List<Teacher> teacherAndStuById = mapper.getTeacherAndStuById(1);
+            teacherAndStuById.forEach(teacher -> System.out.println(teacher));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
 }

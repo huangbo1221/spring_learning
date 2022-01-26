@@ -4,8 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--核心配置文件-->
 <mapper namespace="huang.dao.TeacherMapper">
+    <resultMap id="teacherModel" type="huang.pojo.Teacher">
+        <result property="id" column="tid"></result>
+        <result property="name" column="tname"></result>
+        <collection property="students" ofType="huang.pojo.Student">
+            <result property="id" column="sid"></result>
+            <result property="name" column="sname"></result>
+        </collection>
+    </resultMap>
+
+
     <select id="getAllTeachers" resultType="huang.pojo.Teacher">
         select id, name from teacher;
     </select>
 
+    <select id="getTeacherAndStuById" resultMap="teacherModel">
+        SELECT
+            t.id AS tid,
+            t.NAME AS tname,
+            stu.id AS sid,
+            stu.NAME AS sname
+        FROM
+            teacher t
+        LEFT JOIN student stu ON t.id = stu.tid
+    </select>
 </mapper>

@@ -866,3 +866,38 @@ INSERT INTO student (id, NAME, tid) VALUES(6,'xiaohong', 2);-- failed!
     LEFT JOIN teacher t ON t.id = stu.tid
 </select>
 ```
+
+### 一对多的处理
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--核心配置文件-->
+<mapper namespace="huang.dao.TeacherMapper">
+    <resultMap id="teacherModel" type="huang.pojo.Teacher">
+        <result property="id" column="tid"></result>
+        <result property="name" column="tname"></result>
+        <collection property="students" ofType="huang.pojo.Student">
+            <result property="id" column="sid"></result>
+            <result property="name" column="sname"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getTeacherAndStuById" resultMap="teacherModel">
+        SELECT
+            t.id AS tid,
+            t.NAME AS tname,
+            stu.id AS sid,
+            stu.NAME AS sname
+        FROM
+            teacher t
+        LEFT JOIN student stu ON t.id = stu.tid
+    </select>
+</mapper>
+```
+
+#### 小结
+1、关联--association 【多对一】
+2、集合--collection  【一对多】
+3、javaType ofType
