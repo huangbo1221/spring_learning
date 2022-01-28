@@ -901,3 +901,72 @@ INSERT INTO student (id, NAME, tid) VALUES(6,'xiaohong', 2);-- failed!
 1、关联--association 【多对一】
 2、集合--collection  【一对多】
 3、javaType ofType
+
+### 动态sql
+#### if判断
+```xml
+<select id="queryBlogByIf" parameterType="Map" resultType="blog">
+    select * from blog
+    where 1=1
+    <if test="title != null">
+        and title like #{title}
+    </if>
+    <if test="author != null">
+        and author = #{author}
+    </if>
+</select>
+```
+
+#### choose、when、otherwise
+有时候，我们不想使用所有的条件，而只是想从多个条件中选择一个使用。针对这种情况，
+MyBatis 提供了 choose 元素， 它有点像 Java 中的 switch 语句。
+```xml
+<select id="queryBlogByChoose" parameterType="Map" resultType="blog">
+    select * from blog
+    <where>
+        <choose>
+            <when test="title != null">
+                and title like #{title}
+            </when>
+            <when test="author != null">
+                and author = #{author}
+            </when>
+            <otherwise>
+                and views = #{views}
+            </otherwise>
+        </choose>
+    </where>
+</select>
+```
+
+#### trim、where、set
+掌握where标签的使用，相当于where 1=1的功能
+```xml
+<select id="queryBlogByIf" parameterType="Map" resultType="blog">
+    select * from blog
+    <where>
+        <if test="title != null">
+            title like #{title}
+        </if>
+        <if test="author != null">
+            and author = #{author}
+        </if>
+    </where>
+</select>
+```
+
+掌握set标签的使用，可以方便去除后缀的','
+```xml
+<update id="updateBlog" parameterType="Map">
+    UPDATE blog
+        <set>
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="author != null">
+                author = #{author},
+            </if>
+        </set>
+        where id = #{id}
+</update>
+```

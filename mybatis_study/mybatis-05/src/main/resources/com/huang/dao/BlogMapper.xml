@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--核心配置文件-->
+<mapper namespace="com.huang.dao.BlogMapper">
+    <insert id="addBlog" parameterType="blog">
+        insert into blog (id, title, author, createTime, views) values (#{id}, #{title}, #{author}, #{createTime}, #{views})
+    </insert>
+
+    <select id="queryBlogByIf" parameterType="Map" resultType="blog">
+        select * from blog
+        <where>
+            <if test="title != null">
+                title like #{title}
+            </if>
+            <if test="author != null">
+                and author = #{author}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryBlogByChoose" parameterType="Map" resultType="blog">
+        select * from blog
+        <where>
+            <choose>
+                <when test="title != null">
+                    and title like #{title}
+                </when>
+                <when test="author != null">
+                    and author = #{author}
+                </when>
+                <otherwise>
+                    and views = #{views}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <update id="updateBlog" parameterType="Map">
+        UPDATE blog
+            <set>
+                <if test="title != null">
+                    title = #{title},
+                </if>
+                <if test="author != null">
+                    author = #{author},
+                </if>
+            </set>
+            where id = #{id}
+    </update>
+</mapper>
