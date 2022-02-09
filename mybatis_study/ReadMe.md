@@ -899,7 +899,9 @@ INSERT INTO student (id, NAME, tid) VALUES(6,'xiaohong', 2);-- failed!
 
 #### 小结
 1、关联--association 【多对一】
+
 2、集合--collection  【一对多】
+
 3、javaType ofType
 
 ### 动态sql
@@ -970,3 +972,80 @@ MyBatis 提供了 choose 元素， 它有点像 Java 中的 switch 语句。
         where id = #{id}
 </update>
 ```
+
+#### sql片段
+在开发过程中，会经常在xml写各种sql，有些sql会写很多遍，显得很重复。可以将其提取成
+公共sql，然后在其他sql中引用公共sql。如下：
+```xml
+<sql id="commonsql">
+    <if test="title != null">
+        title like #{title}
+    </if>
+    <if test="author != null">
+        and author = #{author}
+    </if>
+</sql>
+
+<select id="queryBlogByIf" parameterType="Map" resultType="blog">
+    select * from blog
+    <where>
+        <include refid="commonsql"></include>
+    </where>
+</select>
+```
+
+#### foreach用法
+1、第一种
+```mysql
+select * from blog where views in (2,3)
+```
+
+效果如下：
+
+![img_13.png](img_13.png)
+
+写成动态sql如下：
+```xml
+<select id="getBlogsByForEach1" parameterType="Map" resultType="com.huang.pojo.Blog">
+    select * from blog
+        <where>
+            <if test="viewsMap != null">
+                views in
+                <foreach collection="viewsMap" index="index" item="view" open="(" separator="," close=")">
+                    #{view}
+                </foreach>
+            </if>
+        </where>
+</select>
+```
+
+![img_14.png](img_14.png)
+
+
+2、第二种
+```mysql
+select * from blog where 1=1 and (views = 2 or views = 3)
+```
+
+效果如下：
+
+![img_15.png](img_15.png)
+
+动态sql如下：
+```xml
+<select id="getBlogsByForEach2" parameterType="Map" resultType="com.huang.pojo.Blog">
+    select * from blog
+        <where>
+            <if test="viewsMap != null">
+                <foreach collection="viewsMap" item="view" index="index" open="(" separator="or" close=")">
+                    views = #{view}
+                </foreach>
+            </if>
+        </where>
+</select>
+```
+
+执行效果：
+
+![img_16.png](img_16.png)
+

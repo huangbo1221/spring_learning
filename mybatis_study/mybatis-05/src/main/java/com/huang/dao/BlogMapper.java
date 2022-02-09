@@ -24,4 +24,10 @@ public interface BlogMapper {
 
     // 更新博客
     void updateBlog(Map<String, Object> map);
+
+    // 学习foreach的使用
+    List<Blog> getBlogsByForEach1(Map<String, Object> map);
+
+    // 学习foreach的使用
+    List<Blog> getBlogsByForEach2(Map<String, Object> map);
 }

@@ -8,15 +8,19 @@
         insert into blog (id, title, author, createTime, views) values (#{id}, #{title}, #{author}, #{createTime}, #{views})
     </insert>
 
+    <sql id="commonsql">
+        <if test="title != null">
+            title like #{title}
+        </if>
+        <if test="author != null">
+            and author = #{author}
+        </if>
+    </sql>
+    
     <select id="queryBlogByIf" parameterType="Map" resultType="blog">
         select * from blog
         <where>
-            <if test="title != null">
-                title like #{title}
-            </if>
-            <if test="author != null">
-                and author = #{author}
-            </if>
+            <include refid="commonsql"></include>
         </where>
     </select>
 
@@ -49,4 +53,27 @@
             </set>
             where id = #{id}
     </update>
+
+    <select id="getBlogsByForEach1" parameterType="Map" resultType="com.huang.pojo.Blog">
+        select * from blog
+            <where>
+                <if test="viewsMap != null">
+                    views in
+                    <foreach collection="viewsMap" index="index" item="view" open="(" separator="," close=")">
+                        #{view}
+                    </foreach>
+                </if>
+            </where>
+    </select>
+
+    <select id="getBlogsByForEach2" parameterType="Map" resultType="com.huang.pojo.Blog">
+        select * from blog
+            <where>
+                <if test="viewsMap != null">
+                    <foreach collection="viewsMap" item="view" index="index" open="(" separator="or" close=")">
+                        views = #{view}
+                    </foreach>
+                </if>
+            </where>
+    </select>
 </mapper>
