@@ -102,8 +102,8 @@ public class BlogTest {
             sqlSession = MybatisUtils.getAutoCommitSqlSession();
             Map<String, Object> params = new HashMap<>();
             params.put("title", "title_modified");
-            params.put("author", "huangbo_modified");
-            params.put("id", "9fc3b8173fa54a8990120167ad11b51c");
+            params.put("author", "huangbobo");
+            params.put("id", "083ec33eb18c418ca3866bc6bdcd6c53");
             BlogMapper mapper = sqlSession.getMapper(BlogMapper.class);
             mapper.updateBlog(params);
         } catch (Exception e) {
@@ -148,6 +148,36 @@ public class BlogTest {
             params.put("viewsMap", views);
             List<Blog> blogsByForEach = mapper.getBlogsByForEach2(params);
             blogsByForEach.forEach(blog -> System.out.println(blog));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            sqlSession.close();
+        }
+    }
+
+    @Test
+    public void test07() {
+        SqlSession sqlSession = null;
+
+        try {
+            sqlSession = MybatisUtils.getSqlSession();
+            BlogMapper mapper = sqlSession.getMapper(BlogMapper.class);
+            Blog blog1 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+            System.out.println(blog1);
+
+            // 执行另外一条更新数据的sql
+            Map<String, Object> params = new HashMap<>();
+            params.put("title", "title_modified");
+            params.put("author", "huangbobo");
+            params.put("id", "083ec33eb18c418ca3866bc6bdcd6c53");
+            mapper.updateBlog(params);
+            sqlSession.commit();
+
+            System.out.println("==============================");
+            Blog blog2 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+            System.out.println(blog2);
+
+            System.out.println(blog1 == blog2);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

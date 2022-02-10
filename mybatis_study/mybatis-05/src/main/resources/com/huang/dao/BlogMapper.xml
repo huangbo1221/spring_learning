@@ -76,4 +76,11 @@
                 </if>
             </where>
     </select>
+
+    <select id="queryBlogById" resultType="blog">
+        select * from blog
+            <if test="id != null">
+                where id = #{id}
+            </if>
+    </select>
 </mapper>

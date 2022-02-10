@@ -1049,3 +1049,88 @@ select * from blog where 1=1 and (views = 2 or views = 3)
 
 ![img_16.png](img_16.png)
 
+### 缓存
+#### 一级缓存
+一级缓存也叫本地缓存：sqlsession
+* 与数据库同一次会话期间查询到的数据会被放在本地缓存中；
+* 以后如果需要相同的数据，直接从缓存中拿，没必要再去查询数据库
+
+举例如下：
+```java
+@Test
+public void test07() {
+    SqlSession sqlSession = null;
+
+    try {
+        sqlSession = MybatisUtils.getSqlSession();
+        BlogMapper mapper = sqlSession.getMapper(BlogMapper.class);
+        Blog blog1 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog1);
+        System.out.println("==============================");
+        Blog blog2 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog2);
+
+        System.out.println(blog1 == blog2);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        sqlSession.close();
+    }
+}
+```
+如上查询两次相同的sql，执行的效果如下
+
+![img_17.png](img_17.png)
+
+当执行两个不一样的sql时，输出如下：
+
+![img_18.png](img_18.png)
+
+**缓存失效的情况**
+* 映射语句文件中的所有 select 语句的结果将会被缓存。
+
+_**如上面的例子所示！**_
+* 映射语句文件中的所有 insert、update 和 delete 语句会刷新缓存。
+
+```java
+@Test
+public void test07() {
+    SqlSession sqlSession = null;
+
+    try {
+        sqlSession = MybatisUtils.getSqlSession();
+        BlogMapper mapper = sqlSession.getMapper(BlogMapper.class);
+        Blog blog1 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog1);
+        
+        // 执行另外一条更新数据的sql
+        Map<String, Object> params = new HashMap<>();
+        params.put("title", "title_modified");
+        params.put("author", "huangbobo");
+        params.put("id", "083ec33eb18c418ca3866bc6bdcd6c53");
+        mapper.updateBlog(params);
+        sqlSession.commit();
+
+        System.out.println("==============================");
+        Blog blog2 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog2);
+
+        System.out.println(blog1 == blog2);
+    } catch (Exception e) {
+        e.printStackTrace();
+    } finally {
+        sqlSession.close();
+    }
+}
+```
+两条相同查询sql之间执行了一次更新的sql，更新的是其他记录。这种情况下执行效果如如下：
+
+![img_19.png](img_19.png)
+
+
+* 缓存会使用最近最少使用算法（LRU, Least Recently Used）算法来清除不需要的缓存。
+* 缓存不会定时进行刷新（也就是说，没有刷新间隔）。
+* 缓存会保存列表或对象（无论查询方法返回哪种）的 1024 个引用。
+* 缓存会被视为读/写缓存，这意味着获取到的对象并不是共享的，可以安全地被调用者修改，而不干扰其他调用者或线程所做的潜在修改。
+
+**小结**：一级缓存时默认开启的，只在一次sqlsession中有效（相当于同一个用户的同一次请求）。

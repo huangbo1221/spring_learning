@@ -1,6 +1,7 @@
 package com.huang.dao;
 
 import com.huang.pojo.Blog;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -30,4 +31,7 @@ public interface BlogMapper {
 
     // 学习foreach的使用
     List<Blog> getBlogsByForEach2(Map<String, Object> map);
+
+    // 根据id查询博客
+    Blog queryBlogById(@Param("id") String id);
 }
