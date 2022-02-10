@@ -184,4 +184,24 @@ public class BlogTest {
             sqlSession.close();
         }
     }
+
+    @Test
+    public void test08() {
+        SqlSession sqlSession1 = MybatisUtils.getSqlSession();
+        BlogMapper mapper = sqlSession1.getMapper(BlogMapper.class);
+        Blog blog1 = mapper.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog1);
+        sqlSession1.close();
+        System.out.println("============================================================");
+        SqlSession sqlSession2 = MybatisUtils.getSqlSession();
+        BlogMapper mapper2 = sqlSession2.getMapper(BlogMapper.class);
+        Blog blog2 = mapper2.queryBlogById("9fc3b8173fa54a8990120167ad11b51c");
+        System.out.println(blog2);
+        System.out.println(blog1 == blog2);
+        // 关闭两个不同的sqlsession
+
+        sqlSession2.close();
+
+
+    }
 }

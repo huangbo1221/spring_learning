@@ -11,6 +11,8 @@
 
     <settings>
         <setting name="logImpl" value="LOG4J"/>
+        <!--   开启全局缓存，默认就是true，但是最好还是显示的写出来     -->
+        <setting name="cacheEnabled" value="true"/>
     </settings>
     
     <typeAliases>
