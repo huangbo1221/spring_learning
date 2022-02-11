@@ -632,7 +632,7 @@ public class User {
     private String name = "huangbo1221";
 }
 ```
-将类注册的bian声明为单例的
+将类注册的bean声明为单例的
 
 # 使用java的方式配置spring
 我们现在要完全不使用spring的xml配置了，全权交给java来做。
@@ -788,7 +788,7 @@ false
 * 公共业务就交给了代理角色，实现了业务的分工。
 * 公共业务发生扩展的时候，方便集中管理。
 缺点：
-* 一个真实角色就会产生一个代理角色；代码量会翻倍。，开发效率会变低。
+* 一个真实角色就会产生一个代理角色；代码量会翻倍，开发效率会变低。
 
 ## 动态代理
 * 动态代理和静态代理角色一样
@@ -797,7 +797,13 @@ false
 （1）基于接口---JDK的动态代理
 （2）基于类---cglib
 （3）java字节码实现---javasist
-需要了解两个类：Proxy：代理     InvocationHandler：调用处理程序
+
+需要了解两个类：
+
+Proxy：代理 
+
+InvocationHandler：调用处理程序
+
 一定要掌握Proxy和InvocationHandler，然后结合com.huang.demo3.ProxyInvocationHandler
 的实例看一下动态代理的用法！！！
 
@@ -933,3 +939,53 @@ public void test03() {
 方法执行后！
 环绕后！
 ```
+
+## mybatis-spring
+学习将mybatis和spring整合，不用在代码里手动创建SqlSessionFactory和SqlSession
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+<!-- datasource： 使用spring的数据源替换mybatis的配置 c3p0  dbcp druid
+ 我们这里使用spring提供的jdbc-->
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="jdbc:mysql://localhost:3306/smbms?useSSL=false"></property>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+
+    <!--  这里类似在学mybatis时，手动在代码里创建的sqlsessionfactory。只不过这里利用spring来管理了  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-spring-config.xml"></property>
+        <property name="mapperLocations" value="classpath:com/huang/mapper/*.xml"></property>
+    </bean>
+
+    <!--  这里就相当于我们学习mybatis时，每一次查询数据库获取到的SqlSession  -->
+    <bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate">
+        <!--   这里只能使用构造器注入，因为它没有set方法     -->
+        <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+    </bean>
+
+    <bean id="userMapper" class="com.huang.mapper.UserMapperImpl">
+        <property name="sqlSession" ref="sqlsession"/>
+    </bean>
+</beans>
+```
+整体步骤：
+* 编写数据源配置dataSource
+* 编写sqlSessionFactory配置
+* 编写sqlsession配置
+* 需要给接口加实现类UserMapperImpl
+
+相较于以前手动写mybatis的sqlsessionfactory，这种方式多了一个步骤【给接口加实现类】。
+但是这个时必须的，因为将sqlsessionfactory和sqlsession交给了spring来管理，但是mybatis
+的东西没办法自动创建，只能在实现类UserMapperImpl里多写一个SqlSessionTemplate sqlSession;
+来主动注入！

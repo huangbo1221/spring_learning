@@ -5,7 +5,7 @@
 <!--绑定的接口-->
 <mapper namespace="com.huang.mapper.UserMapper">
     <select id="selectUsers" resultType="com.huang.pojo.User">
-        select id,userCode,userName from smbms.smbms_user;
+        select id,userCode,userName from smbms_user;
     </select>
 
 </mapper>

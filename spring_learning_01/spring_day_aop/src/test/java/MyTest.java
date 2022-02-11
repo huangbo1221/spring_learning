@@ -1,4 +1,5 @@
 import com.huang.service.UserService;
+import com.huang.service.UserServiceImpl;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,7 +30,7 @@ public class MyTest {
     @Test
     public void test03() {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-        UserService userService = context.getBean("userService", UserService.class);
+        UserServiceImpl userService = (UserServiceImpl) context.getBean("userService", UserService.class);
         userService.add();
     }
 }
