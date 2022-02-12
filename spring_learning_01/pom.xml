@@ -18,6 +18,7 @@
         <module>spring_day_proxy</module>
         <module>spring_day_aop</module>
         <module>spring_day_mybatis</module>
+        <module>spring_transaction</module>
     </modules>
 
     <dependencies>

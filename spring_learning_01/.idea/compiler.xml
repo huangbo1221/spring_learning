@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="spring_day_aop" />
+        <module name="spring_transaction" />
         <module name="spring_hello_01" />
         <module name="spring_day_proxy" />
         <module name="spring_ioc_01" />

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+<!-- datasource： 使用spring的数据源替换mybatis的配置 c3p0  dbcp druid
+ 我们这里使用spring提供的jdbc-->
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="url" value="jdbc:mysql://localhost:3306/smbms?useSSL=false"></property>
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="123456"></property>
+    </bean>
+
+    <!--  这里类似在学mybatis时，手动在代码里创建的sqlsessionfactory。只不过这里利用spring来管理了  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-spring-config.xml"></property>
+        <property name="mapperLocations" value="classpath:com/huang/mapper/*.xml"></property>
+    </bean>
+
+    <!--  这里就相当于我们学习mybatis时，每一次查询数据库获取到的SqlSession  -->
+    <bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate">
+        <!--   这里只能使用构造器注入，因为它没有set方法     -->
+        <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+    </bean>
+
+    <!--  配置声明式事务  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <constructor-arg name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!--  结合AOP实现事务的织入  -->
+    <!--  配置事务通知  -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <!--  给哪些方法配置事务      -->
+        <!--  配置事务的传播特性 propagation参数
+          propagation="REQUIRED"： 如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。这是最常见的选择。-->
+        <tx:attributes>
+            <!--  给add*方法配置事务，表示的是以add开头的方法添加了事务      -->
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <!--  给delete方法配置事务      -->
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <!--  给update方法配置事务      -->
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <!--  给query方法配置事务，其实查的方法是不需要事务的，read-only="true"表示以query的方法只能是只读的，
+            不能对数据库进行变动-->
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="select*" propagation="NEVER"/>
+            <!--  给所有方法配置事务      -->
+<!--            <tx:method name="*" propagation="REQUIRED"/>-->
+        </tx:attributes>
+    </tx:advice>
+
+    <!--  配置事务的切入，利用AOP实现  -->
+    <aop:config>
+        <!--  设置切入点：切入点为com.huang.mapper包下的所有类的所有方法      -->
+        <aop:pointcut id="txPointCut" expression="execution(* com.huang.mapper.*.*(..))"/>
+        <!-- 再来设置切入什么东西，下面就表示把txAdvice切入到txPointCut -->
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"></aop:advisor>
+    </aop:config>
+</beans>

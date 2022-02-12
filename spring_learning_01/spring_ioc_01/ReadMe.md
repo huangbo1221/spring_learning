@@ -1037,3 +1037,175 @@ public void test03() {
 <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
 可以看看SqlSessionDaoSupport类，有个变量如下，因此需要注入。
 private SqlSessionTemplate sqlSessionTemplate;
+
+## 声明式事务
+### 回顾事务
+* 把一组业务当成一个业务来做，要么都成功，要么都失败；
+* 事务在项目开发中，十分的重要，涉及到数据的一致性问题；
+* 确保完整性和一致性。
+
+事务ACID原则
+* 原子性
+* 一致性
+* 隔离性
+
+多个业务可能操作同一个资源，防止数据损坏
+
+* 持久性
+
+事务一旦提交，无论系统发生什么问题，结果都不会被影响，被持久化写到存储器中。
+
+### 两种事务
+声明式事务：利用AOP的原理横切进去
+编程式事务：在代码里主动设置事务，报错时回滚。
+
+举例：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--绑定的接口-->
+<mapper namespace="com.huang.mapper.UserMapper">
+    <select id="selectUsers" resultType="com.huang.pojo.User">
+        select id,userCode,userName from smbms_user;
+    </select>
+
+    <insert id="addUser" parameterType="user">
+        insert into smbms_user (id, userCode, userName) values (#{id}, #{userCode}, #{userName})
+    </insert>
+
+    <delete id="deleteUser" parameterType="int">
+        deletes from smbms_user where id = #{id}
+    </delete>
+</mapper>
+```
+
+![img_3.png](img_3.png)
+
+在未设置事务之前，看下下面的sql执行结果：
+```java
+package com.huang.mapper;
+
+import com.huang.pojo.User;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+
+import java.util.List;
+
+/**
+ * @ClassName UserMapperImpl
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/2/12 12:21
+ * @Version 1.0
+ */
+public class UserMapperImpl extends SqlSessionDaoSupport implements UserMapper{
+    @Override
+    public List<User> selectUsers() {
+        User user = new User(16, "bo16", "bobobo");
+        addUser(user);
+        deleteUser(16);
+        return getSqlSession().getMapper(UserMapper.class).selectUsers();
+    }
+
+    @Override
+    public int addUser(User user) {
+        return getSqlSession().getMapper(UserMapper.class).addUser(user);
+    }
+
+    @Override
+    public int deleteUser(int id) {
+        return getSqlSession().getMapper(UserMapper.class).deleteUser(id);
+    }
+}
+```
+如上，在执行selectUsers方法时，会依次执行add方法和delete方法。但是delete方法是报错的，add
+方法还能添加用户不？结果如下：
+
+![img_4.png](img_4.png)
+
+![img_5.png](img_5.png)
+
+可见，虽然sql报错，但是还是执行了add方法添加了用户。（未设置事务管理时）
+
+采用声明式事务来进行管理！！！达到sql执行报错时，不能有sql更新数据库的目的。
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+  <!-- datasource： 使用spring的数据源替换mybatis的配置 c3p0  dbcp druid
+   我们这里使用spring提供的jdbc-->
+
+  <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+    <property name="url" value="jdbc:mysql://localhost:3306/smbms?useSSL=false"></property>
+    <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+    <property name="username" value="root"></property>
+    <property name="password" value="123456"></property>
+  </bean>
+
+  <!--  这里类似在学mybatis时，手动在代码里创建的sqlsessionfactory。只不过这里利用spring来管理了  -->
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <property name="configLocation" value="classpath:mybatis-spring-config.xml"></property>
+    <property name="mapperLocations" value="classpath:com/huang/mapper/*.xml"></property>
+  </bean>
+
+  <!--  这里就相当于我们学习mybatis时，每一次查询数据库获取到的SqlSession  -->
+  <bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate">
+    <!--   这里只能使用构造器注入，因为它没有set方法     -->
+    <constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+  </bean>
+
+  <!--  配置声明式事务  -->
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <constructor-arg name="dataSource" ref="dataSource"/>
+  </bean>
+
+  <!--  结合AOP实现事务的织入  -->
+  <!--  配置事务通知  -->
+  <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    <!--  给哪些方法配置事务      -->
+    <!--  配置事务的传播特性 propagation参数
+      propagation="REQUIRED"： 如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。这是最常见的选择。-->
+    <tx:attributes>
+      <!--  给add*方法配置事务，表示的是以add开头的方法添加了事务      -->
+      <tx:method name="add*" propagation="REQUIRED"/>
+      <!--  给delete方法配置事务      -->
+      <tx:method name="delete*" propagation="REQUIRED"/>
+      <!--  给update方法配置事务      -->
+      <tx:method name="update*" propagation="REQUIRED"/>
+      <!--  给query方法配置事务，其实查的方法是不需要事务的，read-only="true"表示以query的方法只能是只读的，
+      不能对数据库进行变动-->
+      <tx:method name="query*" read-only="true"/>
+      <tx:method name="select*" propagation="NEVER"/>
+      <!--  给所有方法配置事务      -->
+      <!--            <tx:method name="*" propagation="REQUIRED"/>-->
+    </tx:attributes>
+  </tx:advice>
+
+  <!--  配置事务的切入，利用AOP实现  -->
+  <aop:config>
+    <!--  设置切入点：切入点为com.huang.mapper包下的所有类的所有方法      -->
+    <aop:pointcut id="txPointCut" expression="execution(* com.huang.mapper.*.*(..))"/>
+    <!-- 再来设置切入什么东西，下面就表示把txAdvice切入到txPointCut -->
+    <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"></aop:advisor>
+  </aop:config>
+</beans>
+```
+完全以spring配置的方式利用AOP将事务织入到数据库的增删改查中，实现了数据库更新报错时，不改变数据库。
+
+**思考**
+
+为什么需要事务？
+* 如果不配置事务，可能存在数据提交不一致的情况；
+* 如果我们不在spring中配置声明式事务，就需要在代码中手动配置事务；
+
+注意：一定要记得引入aspectjweaver组件
