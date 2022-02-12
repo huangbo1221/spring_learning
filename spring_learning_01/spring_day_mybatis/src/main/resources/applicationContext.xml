@@ -12,4 +12,8 @@
     <bean id="userMapper" class="com.huang.mapper.UserMapperImpl">
         <property name="sqlSession" ref="sqlsession"/>
     </bean>
+
+    <bean id="userMapper2" class="com.huang.mapper.UserMapperImpl2">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
 </beans>

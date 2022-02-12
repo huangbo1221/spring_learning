@@ -942,6 +942,7 @@ public void test03() {
 
 ## mybatis-spring
 学习将mybatis和spring整合，不用在代码里手动创建SqlSessionFactory和SqlSession
+### 方式一
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -989,3 +990,50 @@ public void test03() {
 但是这个时必须的，因为将sqlsessionfactory和sqlsession交给了spring来管理，但是mybatis
 的东西没办法自动创建，只能在实现类UserMapperImpl里多写一个SqlSessionTemplate sqlSession;
 来主动注入！
+
+### 方式二
+仔细看上面的实现类，实际还是定义了SqlSessionTemplate sqlSession;实际还可以采用
+SqlSessionDaoSupport来更加精简。仔细看UserMapperImpl2实现类。
+```java
+package com.huang.mapper;
+
+import com.huang.pojo.User;
+import org.mybatis.spring.support.SqlSessionDaoSupport;
+
+import java.util.List;
+
+/**
+ * @ClassName UserMapperImpl2
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/2/12 11:01
+ * @Version 1.0
+ */
+public class UserMapperImpl2 extends SqlSessionDaoSupport implements UserMapper{
+    @Override
+    public List<User> selectUsers() {
+        return getSqlSession().getMapper(UserMapper.class).selectUsers();
+    }
+}
+```
+
+```xml
+<bean id="userMapper2" class="com.huang.mapper.UserMapperImpl2">
+    <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+</bean>
+```
+
+测试：
+```java
+@Test
+public void test03() {
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+    UserMapperImpl2 userMapper = context.getBean("userMapper2", UserMapperImpl2.class);
+    List<User> users = userMapper.selectUsers();
+    users.forEach(user -> System.out.println(user));
+}
+```
+可以看到，不用再手动定义SqlSessionTemplate sqlSession，但是得在spring配置文件嘚注入
+<property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+可以看看SqlSessionDaoSupport类，有个变量如下，因此需要注入。
+private SqlSessionTemplate sqlSessionTemplate;

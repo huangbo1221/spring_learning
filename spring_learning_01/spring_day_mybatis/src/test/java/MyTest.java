@@ -1,5 +1,6 @@
 import com.huang.mapper.UserMapper;
 import com.huang.mapper.UserMapperImpl;
+import com.huang.mapper.UserMapperImpl2;
 import com.huang.pojo.User;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -36,6 +37,14 @@ public class MyTest {
     public void test02() {
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         UserMapperImpl userMapper = context.getBean("userMapper", UserMapperImpl.class);
+        List<User> users = userMapper.selectUsers();
+        users.forEach(user -> System.out.println(user));
+    }
+
+    @Test
+    public void test03() {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        UserMapperImpl2 userMapper = context.getBean("userMapper2", UserMapperImpl2.class);
         List<User> users = userMapper.selectUsers();
         users.forEach(user -> System.out.println(user));
     }

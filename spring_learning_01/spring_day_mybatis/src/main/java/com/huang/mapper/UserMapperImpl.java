@@ -15,6 +15,7 @@ import java.util.List;
  */
 @Data
 public class UserMapperImpl implements UserMapper{
+    // 我们的所有操作，在原来都使用sqlsession来执行，现在都使用SqlSessionTemplate
     SqlSessionTemplate sqlSession;
 
     @Override
