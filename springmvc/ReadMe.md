@@ -164,3 +164,50 @@ public class HelloAnnoController {
 ![img_8.png](img_8.png)
 
 可见，最终的结果是没有经过视图解析器的。@RestController不用结果视图解析器！
+
+## restful风格
+
+![img_9.png](img_9.png)
+
+eg1：
+```java
+// 非restful风格的访问方式
+@RequestMapping("/r1")
+public String test1(int a, int b, Model model) {
+    int res = a + b;
+    model.addAttribute("msg", "test1 method! res:" + res);
+    return "test";
+}
+```
+
+![img_10.png](img_10.png)
+
+```java
+ // restful风格的访问方式
+@RequestMapping("/r2/{a}/{b}")
+public String test2(@PathVariable int a, @PathVariable int b, Model model) {
+    int res = a + b;
+    model.addAttribute("msg", "test2 method! res:" + res);
+    return "test";
+    }
+
+// restful风格的访问方式
+@RequestMapping(value = "/r3/{a}/{b}", method = RequestMethod.GET)
+public String test3(@PathVariable int a, @PathVariable int b, Model model) {
+    int res = a + b;
+    model.addAttribute("msg", "test3 method! res:" + res);
+    return "test";
+    }
+
+// restful风格的访问方式
+@GetMapping(value = "/r4/{a}/{b}")
+public String test4(@PathVariable int a, @PathVariable int b, Model model) {
+    int res = a + b;
+    model.addAttribute("msg", "test4 method! res:" + res);
+    return "test";
+    }
+```
+
+![img_11.png](img_11.png)
+
+两次请求的风格是不一样的，restful风格可以根据资源的形式来完成请求！
