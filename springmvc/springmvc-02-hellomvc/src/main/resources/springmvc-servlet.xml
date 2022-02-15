@@ -7,7 +7,10 @@
     <!--  根据bean的name来进行url的转发处理，如下面name="/hello"的处理方式  -->
     <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
-
+    <!--1、获取了ModelAndView的数据-->
+    <!--2、解析ModelAndView的视图名字-->
+    <!--3、拼接视图的名字，找到对应的视图-->
+    <!--4、将数据渲染到这个视图上-->
     <bean id="InternalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <!--   前缀     -->
         <property name="prefix" value="/WEB-INF/jsp/"></property>

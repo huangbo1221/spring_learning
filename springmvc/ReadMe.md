@@ -39,3 +39,50 @@
 
 ![img_3.png](img_3.png)
 
+### SpringMVC执行流程
+
+![img_4.png](img_4.png)
+
+![img_5.png](img_5.png)
+
+上图为SpringMVC的一个较为完整的流程图，实现表示SpringMVC框架提供的技术，不需要开发者
+实现，虚线表示需要开发者实现。
+
+**简要分析其执行流程**
+
+1、DispatcherServlet表示前端控制器，是整个SpringMVC的控制中心。用户发出请求，DispatcherServlet
+接收请求并拦截请求。
+* 我们假设请求的url为http://localhost:8080/SpringMVC/hello
+* 如上url可以拆成三个部分：
+
+（1）http://localhost:8080为服务器域名
+（2）SpringMVC部署在服务器上的web站点
+![img_6.png](img_6.png)
+（3）hello表示控制器
+
+* 通过分析，如上url表示为：请求位于服务器http://localhost:8080的SpringMVC站点的
+hello控制器。
+
+2、HandlerMapping为处理器映射。DispatcherServlet调用HandlerMapping，HandlerMapping
+根据请求url查找handler。
+
+3、HandlerExcuution表示具体的handler，其主要作用是根据url查找控制器，如上url查找
+控制器为：hello。
+
+4、HandlerExcuution将解析后的信息传递给DispatcherServlet，如解析控制器映射等。
+
+5、HandlerAdapter表示处理器适配器。其按照特定的规则去执行Handler。
+
+6、Handler让具体的Controller去执行。对应上例中的HelloController。
+
+7、Controller将具体的执行信息返回给HandlerAdapter，如返回ModelAndView。
+
+8、HandlerAdapter将视图逻辑名或模型传递给DispatcherServlet。
+
+9、DispatcherServlet调用视图解析器（ViewResolver）来解析HandlerAdapter传递过来的逻辑视图名。
+
+10、视图解析器将解析的逻辑视图名传递给DispatcherServlet。
+
+11、DispatcherServlet根据视图解析器解析的视图结果，调用具体的视图。
+
+12、最终视图呈现给用户。
