@@ -86,3 +86,81 @@ hello控制器。
 11、DispatcherServlet根据视图解析器解析的视图结果，调用具体的视图。
 
 12、最终视图呈现给用户。
+
+## 注解实现springmvc的第一个例子
+如springmvc-03-annotation所示
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--自动扫描包，让指定包下的注解生效，由IOC容器统一管理-->
+    <context:component-scan base-package="com.huang.controller"/>
+    <!--让springmvc不处理静态资源， .css   .html  .js .mp3  .mp4等等    -->
+    <mvc:default-servlet-handler/>
+
+    <!--
+      支持mvc注解驱动
+        在spring中一般采用@ResourceMapping注解来完成映射关系
+        要想使@ResourceMapping生效，必须向上下文注册DefaultAnnotationHandlerMapping
+        和一个AnnotationMethodHandlerAdapter实例
+        这两个实例分别在类级别和方法级别处理。
+        而annotation-driven配置帮助我们自动完成上述两个实例的注入！
+      -->
+    <mvc:annotation-driven/>
+
+    <!--  视图解析器  -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+</beans>
+```
+
+```java
+package com.huang.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @ClassName HelloAnnoController
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/2/15 21:33
+ * @Version 1.0
+ */
+@Controller
+@RequestMapping("/hellocontroller")
+public class HelloAnnoController {
+
+//    真实访问地址：/hellocontroller/hello
+    @RequestMapping("/hello")
+    public String sayHello(Model model) {
+        // 向模型中添加属性msg的值，可以在jsp中取出并渲染
+        model.addAttribute("msg", "hello, springmvc annotion!");
+        // WEB-INF/jsp/hello.jsp
+        return "hello";
+    }
+}
+```
+
+上面这个例子的输出如下：
+
+![img_7.png](img_7.png)
+
+经过了视图解析器的渲染，跳转到了hello.jsp
+
+将@Controller改变为@RestController，输出如下
+
+![img_8.png](img_8.png)
+
+可见，最终的结果是没有经过视图解析器的。@RestController不用结果视图解析器！
