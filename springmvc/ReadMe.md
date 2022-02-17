@@ -211,3 +211,169 @@ public String test4(@PathVariable int a, @PathVariable int b, Model model) {
 ![img_11.png](img_11.png)
 
 两次请求的风格是不一样的，restful风格可以根据资源的形式来完成请求！
+
+## 视图解析器是否一定要在spring的xml文件进行配置？
+其实是可以删除的，如下：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.huang.controller"/>
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+
+<!--    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">-->
+<!--        <property name="prefix" value="/WEB-INF/jsp/"/>-->
+<!--        <property name="suffix" value=".jsp"/>-->
+<!--    </bean>-->
+
+    <bean id="/hello" class="com.huang.controller.Test1Controller"/>
+</beans>
+```
+
+视图解析器已经被注释掉了，然后再看看下面的用例！
+
+### 方式一：
+```java
+package com.huang.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+/**
+ * @ClassName ModuleTest01
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/2/17 22:29
+ * @Version 1.0
+ */
+@Controller
+public class ModuleTest01 {
+    @RequestMapping("m1/t1")
+    public void test01(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("msg", "ModuleTest01的ModuleTest01");
+        request.getRequestDispatcher("/WEB-INF/jsp/test.jsp").forward(request, response);
+    }
+}
+
+```
+
+输出如下：
+
+![img_12.png](img_12.png)
+
+参考如下例子实验
+![img_13.png](img_13.png)
+
+### 方式二：
+```java
+@RequestMapping("m1/t2")
+public String test02(Model model){
+    model.addAttribute("msg", "ModuleTest01的test02");
+    // 视图解析器若存在，则会先走视图解析器拼接，然后转发到指定路径
+    return "/WEB-INF/jsp/test.jsp";
+}
+```
+结果如下：
+
+![img_14.png](img_14.png)
+
+但是要记住，上面方式二是在注释掉视图解析器的情况下，若视图解析器存在，且设置了一定的值！
+```xml
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/jsp/"/>
+    <property name="suffix" value=".jsp"/>
+</bean>
+```
+则结果输出如下：
+
+![img_15.png](img_15.png)
+
+方法返回值与视图解析器的路径进行了拼接！
+
+### 方式三
+视图解析器存在的情况下：
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="com.huang.controller"/>
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="/hello" class="com.huang.controller.Test1Controller"/>
+</beans>
+```
+
+```java
+
+```
+输出如下：
+
+![img_16.png](img_16.png)
+
+表明加了前缀forward，则直接转发到指定的路径
+
+### 方式四
+在存在上述视图解析器的情况下
+```java
+@RequestMapping("m1/t4")
+public String test04(Model model){
+    model.addAttribute("msg", "ModuleTest01的test04");
+    // 重定向转发到指定路径
+    return "redirect:/WEB-INF/jsp/test.jsp";
+}
+```
+
+结果如下：
+执行如下get请求
+
+![img_17.png](img_17.png)
+
+结果：
+
+![img_18.png](img_18.png)
+
+因为jsp目录位于WEB-INF下，但是WEB-INF目录时服务器级别，对客户端隐藏的，因此访问不到！
+
+代码修改如下：
+```java
+@RequestMapping("m1/t4")
+public String test04(Model model){
+    model.addAttribute("msg", "ModuleTest01的test04");
+    // 重定向转发到指定路径
+    return "redirect:/index.jsp";
+}
+```
+
+结果如下：
+
+![img_19.png](img_19.png)
