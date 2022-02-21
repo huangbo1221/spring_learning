@@ -377,3 +377,191 @@ public String test04(Model model){
 结果如下：
 
 ![img_19.png](img_19.png)
+
+
+## 处理提交数据
+controller代码如下：
+```java
+package com.huang.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * @ClassName UserController
+ * @Description TODO
+ * @Author huangbo1221
+ * @Date 2022/2/21 21:03
+ * @Version 1.0
+ */
+@Controller
+@RequestMapping("/user")
+public class UserController {
+    @RequestMapping("/t1")
+    public String test01(String name, Model model) {
+        System.out.println("前端传的参数为： " + name);
+
+        model.addAttribute("msg", name);
+
+        return "test";
+    }
+}
+```
+
+eg1:
+
+![img_20.png](img_20.png)
+
+![img_21.png](img_21.png)
+
+eg2:
+
+![img_22.png](img_22.png)
+
+![img_23.png](img_23.png)
+
+eg3:
+
+![img_24.png](img_24.png)
+
+![img_25.png](img_25.png)
+
+可见，只能识别到name。此时，可以用注解指定参数。如下：
+
+![img_26.png](img_26.png)
+
+eg4:
+
+![img_27.png](img_27.png)
+
+![img_28.png](img_28.png)
+
+eg5:
+
+![img_29.png](img_29.png)
+
+![img_30.png](img_30.png)
+
+服务器指定了需要@RequestParam("userName")参数！
+
+```java
+@RequestMapping("t2")
+public String test02(User user, Model model) {
+    System.out.println(user);
+    model.addAttribute("msg", "success!");
+    return "test";
+}
+```
+
+eg6:
+
+![img_31.png](img_31.png)
+
+![img_32.png](img_32.png)
+
+eg7:
+
+![img_33.png](img_33.png)
+
+![img_34.png](img_34.png)
+
+* 1、接收前端用户传递的参数，判断参数的名字，假设名字直接在方法上，可以直接使用
+* 2、假设传递的是一个User对象，匹配User对象中的字段名，如果名字一致则匹配成功，否则匹配不上。
+
+## 解决乱码
+### 方式1
+
+![img_35.png](img_35.png)
+
+### 方式2：利用Spring自带的过滤器功能
+测试准备：
+
+表单jsp创建如下：
+```html
+<%--
+  Created by IntelliJ IDEA.
+  User: 15603
+  Date: 2022/2/21
+  Time: 21:52
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>表单</title>
+</head>
+<body>
+<form action="${pageContext.request.contextPath}/user/t3" method="post">
+    <input type="text" name="name">
+    <input type="submit">
+</form>
+</body>
+</html>
+```
+java代码
+```java
+@RequestMapping("/t3")
+public String test04(String name, Model model) {
+    System.out.println(name);
+    model.addAttribute("msg", name);
+    return "test";
+}
+```
+
+eg1：
+
+![img_36.png](img_36.png)
+
+![img_37.png](img_37.png)
+
+可见回显时是乱码。
+
+解决方式如下：
+web.xml配置过滤器
+```xml
+<filter>
+    <filter-name>characterencoding</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>characterencoding</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+验证结果如下：
+
+![img_38.png](img_38.png)
+
+**注意**
+filter拦截器的<url-pattern>不要设置成/！！！
+如下：
+```xml
+<filter>
+    <filter-name>characterencoding</filter-name>
+    <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+        <param-name>encoding</param-name>
+        <param-value>utf-8</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>characterencoding</filter-name>
+    <url-pattern>/</url-pattern>
+</filter-mapping>
+```
+
+验证结果如下：
+
+![img_39.png](img_39.png)
+
+仍然是乱码。
+
+因为/表示拦截所有请求（不带扩展名！！！）
+http://localhost:8080/s4/form.jsp  这个请求带了.jsp的扩展
+
+而/*表示拦截所有请求！
