@@ -565,3 +565,42 @@ filter拦截器的<url-pattern>不要设置成/！！！
 http://localhost:8080/s4/form.jsp  这个请求带了.jsp的扩展
 
 而/*表示拦截所有请求！
+
+## 了解json（javascript object notation， js对象标记）
+json键值对是用来保存JavaScript对象的一种方式，和JavaScript对象的写法也大同小异。
+![img_40.png](img_40.png)
+
+### javascript举例
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--script这个标签不要搞自闭和标签-->
+    <script>
+        var user = {
+            id : "1",
+            name: "测试",
+            age : "2"
+        }
+        console.log(user)
+        console.log("======================")
+
+    //    将js对象转化为json
+        var json = JSON.stringify(user)
+        console.log(json)
+        console.log("======================")
+
+        // 将json转换为js对象
+        var obj = JSON.parse(json)
+        console.log(obj)
+    </script>
+</body>
+</html>
+```
+
+![img_41.png](img_41.png)
+
