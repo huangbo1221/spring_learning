@@ -604,3 +604,75 @@ json键值对是用来保存JavaScript对象的一种方式，和JavaScript对�
 
 ![img_41.png](img_41.png)
 
+### 解决乱码还有其他的方式，如下
+```java
+@RequestMapping("/j2")
+@ResponseBody // 表示直接返回给前端渲染，不经过视图解析器
+public String test02 () {
+   User user = new User("测试", 1, 2);
+   return user.toString();
+}
+```
+测试结果如下：
+
+![img_42.png](img_42.png)
+
+上面的例子可以看出，没有经过filter过滤器时，会造成返回文本的乱码。
+此时，可以设置下面的方式解决：
+
+```java
+@RequestMapping(value = "/j3", produces = "application/json;charset=utf-8")
+@ResponseBody
+public String test03 () {
+    User user = new User("测试", 1, 2);
+    return user.toString();
+}
+```
+
+![img_43.png](img_43.png)
+
+主动设置了返回体produces = "application/json;charset=utf-8"格式
+
+```java
+@RequestMapping(value = "/j4", produces = "application/json;charset=utf-8")
+@ResponseBody
+public String test04() throws JsonProcessingException {
+    ObjectMapper objectMapper = new ObjectMapper();
+    User user1 = new User("测试1", 1, 2);
+    User user2 = new User("测试2", 1, 2);
+    User user3 = new User("测试3", 1, 2);
+    User user4 = new User("测试4", 1, 2);
+
+    List<User> users = new ArrayList<>();
+    users.add(user1);
+    users.add(user2);
+    users.add(user3);
+    users.add(user4);
+
+    String valueAsString = objectMapper.writeValueAsString(users);
+    return valueAsString;
+}
+```
+
+输出如下：
+
+![img_44.png](img_44.png)
+
+输出为json化的格式数据
+
+输出日期数据
+```java
+@RequestMapping("/j5")
+public String test05() {
+    Date date = new Date();
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+    return simpleDateFormat.format(date);
+}
+```
+
+yyyy-MM-dd hh:mm:ss 这里的占位符字母一定要不一样，否则就会被后面的字符所代表的数字覆盖
+
+输出如下：
+
+![img_45.png](img_45.png)
+

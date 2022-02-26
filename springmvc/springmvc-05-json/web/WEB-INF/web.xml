@@ -28,6 +28,6 @@
     </filter>
     <filter-mapping>
         <filter-name>encodingfiletr</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/json/j1</url-pattern>
     </filter-mapping>
 </web-app>
