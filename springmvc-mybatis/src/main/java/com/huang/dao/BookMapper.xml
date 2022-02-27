@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.huang.dao.BookMappery">
+<mapper namespace="com.huang.dao.BookMapper">
     <insert id="addBook" parameterType="com.huang.pojo.Book">
         insert into books (bookName, bookCounts, detail) values (#{bookName}, #{bookCounts}, #{detail})
     </insert>

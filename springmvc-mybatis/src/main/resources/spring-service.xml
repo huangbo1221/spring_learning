@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+<!-- 1、扫描service下的包   -->
+    <context:component-scan base-package="com.huang.service"/>
+
+<!-- 2、实现service层的注入。可以在这里写配置，也可以在实现类上利用注解去实现   -->
+    <bean id="bookserviceimpl" class="com.huang.service.BookServiceImpl">
+        <property name="bookMapper" ref="bookMapper"/>
+    </bean>
+
+<!-- 3、声明式事务的配置   -->
+    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+<!--     4、注入数据源   -->
+        <property name="dataSource" ref="datasource"/>
+    </bean>
+
+<!-- 5、AOP事务的支持，需要导入aspectj包   -->
+
+</beans>

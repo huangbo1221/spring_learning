@@ -2,6 +2,8 @@ package com.huang.service;
 
 import com.huang.dao.BookMapper;
 import com.huang.pojo.Book;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -12,8 +14,10 @@ import java.util.List;
  * @Date 2022/2/26 22:39
  * @Version 1.0
  */
+@Service
 public class BookServiceImpl implements BookService{
 
+    @Autowired
     private BookMapper bookMapper;
 
     public void setBookMapper(BookMapper bookMapper) {

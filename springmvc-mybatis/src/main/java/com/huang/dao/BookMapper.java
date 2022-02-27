@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface BookMapper {
+
     int addBook(Book book);
 
     int deleteBookById(@Param("bookId") int id);
