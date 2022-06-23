@@ -32,4 +32,15 @@ public class BookController {
         model.addAttribute("list", books);
         return "allBook";
     }
+
+    @RequestMapping("/toAddBook")
+    public String toAddBook() {
+        return "addBook";
+    }
+
+    @RequestMapping("/addBook")
+    public String addBook(Book book) {
+        bookService.addBook(book);
+        return "redirect:/book/list"; // 重定向到首页
+    }
 }
