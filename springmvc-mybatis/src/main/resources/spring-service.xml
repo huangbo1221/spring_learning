@@ -2,10 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
-       http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       https://www.springframework.org/schema/aop/spring-aop.xsd">
 <!-- 1、扫描service下的包   -->
     <context:component-scan base-package="com.huang.service"/>
 
@@ -15,11 +21,24 @@
     </bean>
 
 <!-- 3、声明式事务的配置   -->
-    <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 <!--     4、注入数据源   -->
         <property name="dataSource" ref="datasource"/>
     </bean>
 
-<!-- 5、AOP事务的支持，需要导入aspectj包   -->
+<!-- 5、AOP事务的支持，需要导入aspectj包。结合AOP实现事务的织入  -->
+    <!--   给那些方法配置事务     -->
+    <!--   配置事务的传播特性：new  propagation    -->
+    <!--   REQUIRED，没有事务时，补充事务    -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED"/>
+        </tx:attributes>
+    </tx:advice>
 
+<!--  配置事务的织入  -->
+    <aop:config>
+        <aop:pointcut id="txPointCut" expression="execution(* com.huang.dao.*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointCut"/>
+    </aop:config>
 </beans>
