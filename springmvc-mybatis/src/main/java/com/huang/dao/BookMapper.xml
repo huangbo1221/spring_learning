@@ -24,4 +24,8 @@
         select * from books
     </select>
 
+    <select id="queryBookByName" resultType="com.huang.pojo.Book">
+        select * from books where bookName like #{queryBookName}
+    </select>
+
 </mapper>

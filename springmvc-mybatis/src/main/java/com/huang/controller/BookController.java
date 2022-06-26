@@ -65,4 +65,13 @@ public class BookController {
         return "redirect:/book/list";
     }
 
+    @RequestMapping("/queryBookByName")
+    public String queryBookByName(String queryBookName, Model model) {
+        if (queryBookName == null || queryBookName == "") {
+            return "error";
+        }
+        List<Book> books = bookService.queryBookByName(queryBookName);
+        model.addAttribute("list", books);
+        return "allBook";
+    }
 }

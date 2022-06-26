@@ -17,4 +17,6 @@ public interface BookMapper {
 
     List<Book> getAllBook();
 
+    List<Book> queryBookByName(String queryBookName);
+
 }
