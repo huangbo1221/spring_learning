@@ -10,7 +10,11 @@
     <typeAliases>
         <package name="com.huang.dao"/>
     </typeAliases>
-
+    <plugins>
+        <plugin interceptor="com.huang.interceptor.MyInterceptor">
+            <property name="someProperty" value="100"/>
+        </plugin>
+    </plugins>
     <mappers>
         <mapper class="com.huang.dao.BookMapper"/>
     </mappers>
